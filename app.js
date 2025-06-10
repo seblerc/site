@@ -26,10 +26,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
 // Oturum ayarları
+app.set('trust proxy', 1); // Render için mutlaka gerekli
+
 app.use(session({
-  secret: process.env.SESSION_SECRET, // Artık env'den alıyor
+  secret: process.env.SESSION_SECRET,
   resave: false,
-  saveUninitialized: true
+  saveUninitialized: false,
+  cookie: {
+    secure: true,         // sadece HTTPS üzerinden
+    sameSite: 'none'      // cross-origin POST'lara izin verir
+  }
 }));
 
 // CSRF koruması tüm formlarda aktif
