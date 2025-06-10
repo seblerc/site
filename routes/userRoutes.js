@@ -24,22 +24,27 @@ router.get('/', userController.anasayfa);
 router.get('/index', userController.anasayfa);
 router.get('/login', userController.loginSayfasi);
 router.post('/login', csrfProtection, userController.loginIslem);
-router.get('/register', csrfProtection, userController.registerSayfasi);
+router.get('/register',  userController.registerSayfasi);
 router.post('/register',  csrfProtection, userController.registerIslem);
 router.get('/logout', userController.logout);
 
 // 👤 Profil İşlemleri
 router.get('/profil', userController.profilSayfasi);
-router.post('/profil', upload.single('profil_resim'), userController.profilGuncelle);
+router.post('/profil', csrfProtection, upload.single('profil_resim'), userController.profilGuncelle);
 
 // 🧠 Admin Panel
 router.get('/admin', adminOnly, userController.adminPanel);
 router.post('/admin/rol-guncelle', adminOnly, csrfProtection, userController.rolGuncelle);
 router.post('/admin/banla/:id', adminOnly, csrfProtection, userController.kullaniciBanla);
 router.post('/admin/sil/:id', adminOnly, csrfProtection, userController.kullaniciSil);
-router.post("/admin/haber-ekle", adminOnly, csrfProtection, upload.single('resim'), userController.haberEkle);
-router.post('/admin/duyuru-ekle', adminOnly, csrfProtection, userController.duyuruEkle);
-router.get('/admin/ekle', adminOnly, csrfProtection, userController.haberDuyuruEkleSayfasi);
+router.post(
+  '/admin/haber-ekle',
+  upload.single('resim'),   // önce multer
+  csrfProtection,           // sonra csrf
+  adminOnly,
+  userController.haberEkle
+);router.post('/admin/duyuru-ekle', csrfProtection, adminOnly, userController.duyuruEkle);
+router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruEkleSayfasi);
 
 // 📄 Haber İşlemleri
 router.get('/haber/:slug', userController.haberDetay);

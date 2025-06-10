@@ -39,14 +39,6 @@ app.use(session({
   }
 }));
 
-// CSRF koruması tüm formlarda aktif
-const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
-
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
 
 // Ziyaretçi log sistemi
 app.use(async (req, res, next) => {

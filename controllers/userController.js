@@ -375,9 +375,9 @@ exports.haberDuyuruEkleSayfasi = async (req, res) => {
   const [kategoriler] = await db.query("SELECT * FROM kategoriler");
   
   res.render('ekle', {
-    kullanici: req.session.kullanici,
-    kategoriler,
-    csrfToken: req.csrfToken()
+    csrfToken: req.csrfToken(),
+  kategoriler,
+  kullanici: req.session.kullanici
   });
 };
 
