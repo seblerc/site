@@ -39,7 +39,13 @@ app.use(session({
 }));
 
 // CSRF koruması tüm formlarda aktif
-const csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf({ 
+  cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: 'none'
+  }
+});
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
