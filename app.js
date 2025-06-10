@@ -48,6 +48,13 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  console.log("Gönderilen CSRF Token (body):", req.body._csrf);
+  console.log("Gönderilen CSRF Token (header):", req.headers['csrf-token']);
+  console.log("CSRF Token (cookie):", req.cookies['_csrf']);
+  next();
+});
+
 // 📊 Ziyaretçi loglama sistemi
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;

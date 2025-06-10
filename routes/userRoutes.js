@@ -30,7 +30,7 @@ router.get('/logout', userController.logout);
 
 // 👤 Profil İşlemleri
 router.get('/profil', userController.profilSayfasi);
-router.post('/profil', csrfProtection, upload.single('profil_resim'), userController.profilGuncelle);
+router.post('/profil', upload.single('profil_resim'),csrfProtection,  userController.profilGuncelle);
 
 // 🧠 Admin Panel
 router.get('/admin', adminOnly, userController.adminPanel);
