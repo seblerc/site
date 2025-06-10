@@ -26,12 +26,7 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
-const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
-app.use(csrfProtection); // 2. Uygula
-app.use((req, res, next) => { // 3. Tüm view'lara aktar
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+
 // Oturum ayarları
 app.set('trust proxy', 1); // Render için mutlaka gerekli
 
@@ -45,7 +40,12 @@ app.use(session({
     sameSite: 'none'       // 🔥 Cross-origin form POST'ları için şart
   }
 }));
-
+const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
+app.use(csrfProtection); // 2. Uygula
+app.use((req, res, next) => { // 3. Tüm view'lara aktar
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 // Ziyaretçi log sistemi
 app.use(async (req, res, next) => {
