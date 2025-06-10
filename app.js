@@ -33,19 +33,14 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-  secure: true,
-  sameSite: 'lax'    // cross-origin POST'lara izin verir
+    httpOnly: true,
+    secure: true,          // 🔥 HTTPS zorunlu
+    sameSite: 'none'       // 🔥 Cross-origin form POST'ları için şart
   }
 }));
 
 // CSRF koruması tüm formlarda aktif
-const csrfProtection = csrf({ 
-  cookie: {
-    httpOnly: true,
-    secure: true,
-    sameSite: 'lax'
-  }
-});
+const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
 app.use((req, res, next) => {
@@ -61,7 +56,9 @@ app.use(async (req, res, next) => {
   if (!cookieId) {
     cookieId = uuidv4();
     res.cookie('visitorId', cookieId, {
-      maxAge: 1000 * 60 * 60 * 24 * 7 
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: true,            // 🔥 Burası da önemli
+  sameSite: 'none'         // 🔥 Bunu da ekle
     });
 
     try {
