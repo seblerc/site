@@ -5,11 +5,11 @@ const upload = require('../multer-config');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
 
-const { RecaptchaV2 } = require('express-recaptcha');
-const recaptcha = new RecaptchaV2(
-  process.env.RECAPTCHA_SITE_KEY,
-  process.env.RECAPTCHA_SECRET_KEY
-);
+// const { RecaptchaV2 } = require('express-recaptcha');
+// const recaptcha = new RecaptchaV2(
+//   process.env.RECAPTCHA_SITE_KEY,
+//   process.env.RECAPTCHA_SECRET_KEY
+// );
 
 // 🔐 Admin yetki kontrolü
 const adminOnly = (req, res, next) => {
@@ -23,9 +23,9 @@ const adminOnly = (req, res, next) => {
 router.get('/', userController.anasayfa);
 router.get('/index', userController.anasayfa);
 router.get('/login', userController.loginSayfasi);
-router.post('/login',recaptcha.middleware.verify, csrfProtection, userController.loginIslem);
+router.post('/login', csrfProtection, userController.loginIslem);
 router.get('/register', csrfProtection, userController.registerSayfasi);
-router.post('/register', recaptcha.middleware.verify, csrfProtection, userController.registerIslem);
+router.post('/register',  csrfProtection, userController.registerIslem);
 router.get('/logout', userController.logout);
 
 // 👤 Profil İşlemleri
