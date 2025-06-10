@@ -1,4 +1,4 @@
-require('dotenv').config(); // Çevresel değişkenleri yükle
+require('dotenv').config();
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
@@ -18,49 +18,40 @@ app.use(helmet());
 
 // 📂 Statik dosyalar ve body-parser
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true })); // Form verisini okuyabilmek için
-app.use(express.json()); // JSON veri kullanıyorsan bunu da ekle
-
-// 🍪 Cookie işlemleri
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 app.use(cookieParser());
 
 // 🔑 Oturum yönetimi
-app.set('trust proxy', 1); // Render gibi servisler için gerekli
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: true, // 🔥 HTTPS zorunlu
-    sameSite: 'none' // 🔥 Cross-origin istekler için şart
+    secure: true,
+    sameSite: 'none'
   }
 }));
 
-// 🛡️ CSRF koruması **session'dan sonra** gelmeli!
-const csrfProtection = csrf();
+// 🛡️ CSRF koruması (cookie tabanlı)
+const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
-// 🔎 CSRF Token’i view'lara aktarma & test logları
+// ✅ CSRF token'ı cookie + ejs için ayarla
 app.use((req, res, next) => {
-  try {
-    console.log("Oluşturulan CSRF Token:", req.csrfToken());
-    res.locals.csrfToken = req.csrfToken();
-
-    const bodyCsrf = req.body ? req.body._csrf : undefined;
-    const headerCsrf = req.headers?.['csrf-token'];
-    const cookieCsrf = req.cookies?.['_csrf'];
-
-    console.log("Gönderilen CSRF Token (body):", bodyCsrf);
-    console.log("Gönderilen CSRF Token (header):", headerCsrf);
-    console.log("CSRF Token (cookie):", cookieCsrf);
-  } catch (err) {
-    console.warn("CSRF kontrolünde hata:", err.message);
-  }
-
+  const token = req.csrfToken();
+  res.cookie('_csrf', token, {
+    secure: true,
+    sameSite: 'none',
+    httpOnly: false // input'tan erişmek için
+  });
+  res.locals.csrfToken = token;
   next();
 });
-// 📊 Ziyaretçi loglama sistemi
+
+// 📊 Ziyaretçi loglama
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   let cookieId = req.cookies.visitorId;
@@ -89,15 +80,15 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// 🖥️ Görüntüleme motoru ayarları
+// 🖥️ View engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// 🔗 Route'ları ekleme
+// 📌 Routes
 app.use('/', sitemapRoutes);
 app.use('/', userRoutes);
 
-// 🚀 Sunucuyu başlat
+// 🚀 Server başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🟢 Sunucu çalışıyor: http://localhost:${PORT}`);
