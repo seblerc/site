@@ -33,8 +33,8 @@ app.use(session({
   resave: false,
   saveUninitialized: false,
   cookie: {
-    secure: true,         // sadece HTTPS üzerinden
-    sameSite: 'none'      // cross-origin POST'lara izin verir
+  secure: true,
+  sameSite: 'lax'    // cross-origin POST'lara izin verir
   }
 }));
 
@@ -43,7 +43,7 @@ const csrfProtection = csrf({
   cookie: {
     httpOnly: true,
     secure: true,
-    sameSite: 'none'
+    sameSite: 'lax'
   }
 });
 app.use(csrfProtection);
