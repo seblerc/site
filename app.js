@@ -1,54 +1,54 @@
-require('dotenv').config(); // .env dosyasını yükle
-const helmet = require('helmet'); // Güvenlik başlıkları için
-
+require('dotenv').config(); // Çevresel değişkenleri yükle
 const express = require('express');
 const path = require('path');
 const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
+const helmet = require('helmet');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
 
-
-
 const sitemapRoutes = require('./routes/sitemapRoutes');
-
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-
-// Güvenlik başlıkları
+// 🔐 Güvenlik başlıkları
 app.use(helmet());
 
-// Statik dosyalar
+// 📂 Statik dosyalar ve body-parser
 app.use(express.static('public'));
-app.use(express.urlencoded({ extended: true }));
+app.use(express.urlencoded({ extended: true })); // Form verisini okuyabilmek için
+app.use(express.json()); // JSON veri kullanıyorsan bunu da ekle
+
+// 🍪 Cookie işlemleri
 app.use(cookieParser());
 
-
-// Oturum ayarları
-app.set('trust proxy', 1); // Render için mutlaka gerekli
-
+// 🔑 Oturum yönetimi
+app.set('trust proxy', 1); // Render gibi servisler için gerekli
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: true,          // 🔥 HTTPS zorunlu
-    sameSite: 'none'       // 🔥 Cross-origin form POST'ları için şart
+    secure: true, // 🔥 HTTPS zorunlu
+    sameSite: 'none' // 🔥 Cross-origin istekler için şart
   }
 }));
 
+// 🛡️ CSRF koruması **session'dan sonra** gelmeli!
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection);
 
+// 🔎 CSRF Token’i view'lara aktarma & test logları
 app.use((req, res, next) => {
-  console.log("Session ID:", req.sessionID);
-  console.log("Gönderilen CSRF Token:", req.body._csrf || req.headers['csrf-token']);
+  console.log("Oluşturulan CSRF Token:", req.csrfToken());
+  res.locals.csrfToken = req.csrfToken();
   next();
 });
 
-// Ziyaretçi log sistemi
+// 📊 Ziyaretçi loglama sistemi
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   let cookieId = req.cookies.visitorId;
@@ -57,23 +57,18 @@ app.use(async (req, res, next) => {
     cookieId = uuidv4();
     res.cookie('visitorId', cookieId, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: true,            // 🔥 Burası da önemli
-  sameSite: 'none'         // 🔥 Bunu da ekle
+      secure: true,
+      sameSite: 'none'
     });
 
     try {
-      await db.query(`
-        INSERT INTO ziyaretciler (ip, cookie_id) VALUES (?, ?)
-      `, [ip, cookieId]);
+      await db.query(`INSERT INTO ziyaretciler (ip, cookie_id) VALUES (?, ?)`, [ip, cookieId]);
     } catch (err) {
       console.error("Ziyaretçi ekleme hatası:", err);
     }
   } else {
     try {
-      await db.query(`
-        UPDATE ziyaretciler SET zaman = NOW()
-        WHERE cookie_id = ?
-      `, [cookieId]);
+      await db.query(`UPDATE ziyaretciler SET zaman = NOW() WHERE cookie_id = ?`, [cookieId]);
     } catch (err) {
       console.error("Zaman güncelleme hatası:", err);
     }
@@ -81,24 +76,17 @@ app.use(async (req, res, next) => {
 
   next();
 });
-const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
-app.use(csrfProtection); // 2. Uygula
-app.use((req, res, next) => {
-  console.log("Oluşturulan CSRF Token:", req.csrfToken());
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
 
+// 🖥️ Görüntüleme motoru ayarları
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Route'lar
+// 🔗 Route'ları ekleme
 app.use('/', sitemapRoutes);
-
 app.use('/', userRoutes);
 
-// Dinleme
+// 🚀 Sunucuyu başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-  console.log(`🟢 http://localhost:${PORT} çalışıyor`);
+  console.log(`🟢 Sunucu çalışıyor: http://localhost:${PORT}`);
 });
