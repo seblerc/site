@@ -12,6 +12,7 @@ const sitemapRoutes = require('./routes/sitemapRoutes');
 const userRoutes = require('./routes/userRoutes');
 
 const app = express();
+const isProd = process.env.NODE_ENV === 'production';
 
 // 🔐 Güvenlik başlıkları
 app.use(helmet());
@@ -23,15 +24,15 @@ app.use(express.json());
 app.use(cookieParser());
 
 // 🔑 Oturum yönetimi
-app.set('trust proxy', 1);
+app.set('trust proxy', 1); // Render için gerekli
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
   saveUninitialized: false,
   cookie: {
     httpOnly: true,
-    secure: true,
-    sameSite: 'none'
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax'
   }
 }));
 
@@ -39,13 +40,13 @@ app.use(session({
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
 
-// ✅ CSRF token'ı cookie + ejs için ayarla
+// 🛡️ CSRF token'ı hem form inputuna hem cookie'ye ver
 app.use((req, res, next) => {
   const token = req.csrfToken();
   res.cookie('_csrf', token, {
-    secure: true,
-    sameSite: 'none',
-    httpOnly: false // input'tan erişmek için
+    secure: isProd,
+    sameSite: isProd ? 'none' : 'lax',
+    httpOnly: false // input'tan erişilecek
   });
   res.locals.csrfToken = token;
   next();
@@ -60,8 +61,8 @@ app.use(async (req, res, next) => {
     cookieId = uuidv4();
     res.cookie('visitorId', cookieId, {
       maxAge: 1000 * 60 * 60 * 24 * 7,
-      secure: true,
-      sameSite: 'none'
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax'
     });
 
     try {
