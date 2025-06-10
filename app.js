@@ -43,18 +43,23 @@ app.use(csrfProtection);
 
 // 🔎 CSRF Token’i view'lara aktarma & test logları
 app.use((req, res, next) => {
-  console.log("Oluşturulan CSRF Token:", req.csrfToken());
-  res.locals.csrfToken = req.csrfToken();
+  try {
+    console.log("Oluşturulan CSRF Token:", req.csrfToken());
+    res.locals.csrfToken = req.csrfToken();
+
+    const bodyCsrf = req.body ? req.body._csrf : undefined;
+    const headerCsrf = req.headers?.['csrf-token'];
+    const cookieCsrf = req.cookies?.['_csrf'];
+
+    console.log("Gönderilen CSRF Token (body):", bodyCsrf);
+    console.log("Gönderilen CSRF Token (header):", headerCsrf);
+    console.log("CSRF Token (cookie):", cookieCsrf);
+  } catch (err) {
+    console.warn("CSRF kontrolünde hata:", err.message);
+  }
+
   next();
 });
-const bodyCsrf = req.body ? req.body._csrf : undefined;
-  const headerCsrf = req.headers ? req.headers['csrf-token'] : undefined;
-  const cookieCsrf = req.cookies ? req.cookies['_csrf'] : undefined;
-
-console.log("Gönderilen CSRF Token (body):", bodyCsrf);
-  console.log("Gönderilen CSRF Token (header):", headerCsrf);
-  console.log("CSRF Token (cookie):", cookieCsrf);
-
 // 📊 Ziyaretçi loglama sistemi
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
