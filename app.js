@@ -5,6 +5,7 @@ const session = require('express-session');
 const cookieParser = require('cookie-parser');
 const csrf = require('csurf');
 const helmet = require('helmet');
+const expressLayouts = require('express-ejs-layouts');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
 
@@ -14,17 +15,17 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
 
-// 🔐 Güvenlik başlıkları
+// 🛡️ Güvenlik başlıkları
 app.use(helmet());
 
-// 📂 Statik dosyalar ve body-parser
+// 🧱 Temel middleware
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// 🔑 Oturum yönetimi
-app.set('trust proxy', 1); // Render için gerekli
+// 📦 Session ayarları
+app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET,
   resave: false,
@@ -36,23 +37,30 @@ app.use(session({
   }
 }));
 
-// 🛡️ CSRF koruması (cookie tabanlı)
-const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection);
+// 🧱 Layout sistemi
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layout'); // layout.ejs varsayılan şablon
 
-// 🛡️ CSRF token'ı hem form inputuna hem cookie'ye ver
+// 🛡️ CSRF koruması
+app.use(csrf({ cookie: true }));
 app.use((req, res, next) => {
-  const token = req.csrfToken();
-  res.cookie('_csrf', token, {
-    secure: isProd,
-    sameSite: isProd ? 'none' : 'lax',
-    httpOnly: false // input'tan erişilecek
-  });
-  res.locals.csrfToken = token;
+  try {
+    const token = req.csrfToken();
+    res.cookie('_csrf', token, {
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax',
+      httpOnly: false
+    });
+    res.locals.csrfToken = token; // Tüm EJS dosyalarında erişilebilir
+  } catch (e) {
+    console.warn('CSRF token oluşturulamadı:', e.message);
+  }
   next();
 });
 
-// 📊 Ziyaretçi loglama
+// 🧠 Ziyaretçi takibi
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   let cookieId = req.cookies.visitorId;
@@ -74,22 +82,18 @@ app.use(async (req, res, next) => {
     try {
       await db.query(`UPDATE ziyaretciler SET zaman = NOW() WHERE cookie_id = ?`, [cookieId]);
     } catch (err) {
-      console.error("Zaman güncelleme hatası:", err);
+      console.error("Ziyaretçi zaman güncelleme hatası:", err);
     }
   }
 
   next();
 });
 
-// 🖥️ View engine
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-
-// 📌 Routes
+// 🛣️ Rotalar
 app.use('/', sitemapRoutes);
 app.use('/', userRoutes);
 
-// 🚀 Server başlat
+// 🚀 Sunucu başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🟢 Sunucu çalışıyor: http://localhost:${PORT}`);
