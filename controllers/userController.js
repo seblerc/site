@@ -201,6 +201,7 @@ exports.profilGuncelle = async (req, res) => {
     res.render('profil', {
       kullanici: req.session.kullanici,
       mesaj: "Bilgiler güncellendi ✅",
+      csrfToken: req.csrfToken()
       
     });
   } catch (err) {
