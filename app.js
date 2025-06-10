@@ -47,13 +47,13 @@ app.use((req, res, next) => {
   res.locals.csrfToken = req.csrfToken();
   next();
 });
+const bodyCsrf = req.body ? req.body._csrf : undefined;
+  const headerCsrf = req.headers ? req.headers['csrf-token'] : undefined;
+  const cookieCsrf = req.cookies ? req.cookies['_csrf'] : undefined;
 
-app.use((req, res, next) => {
-  console.log("Gönderilen CSRF Token (body):", req.body._csrf);
-  console.log("Gönderilen CSRF Token (header):", req.headers['csrf-token']);
-  console.log("CSRF Token (cookie):", req.cookies['_csrf']);
-  next();
-});
+console.log("Gönderilen CSRF Token (body):", bodyCsrf);
+  console.log("Gönderilen CSRF Token (header):", headerCsrf);
+  console.log("CSRF Token (cookie):", cookieCsrf);
 
 // 📊 Ziyaretçi loglama sistemi
 app.use(async (req, res, next) => {
