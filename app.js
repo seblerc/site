@@ -38,7 +38,7 @@ app.use(session({
 }));
 
 // 🛡️ CSRF koruması **session'dan sonra** gelmeli!
-const csrfProtection = csrf({ cookie: true });
+const csrfProtection = csrf();
 app.use(csrfProtection);
 
 // 🔎 CSRF Token’i view'lara aktarma & test logları
