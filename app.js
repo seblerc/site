@@ -42,8 +42,15 @@ app.use(session({
 }));
 const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
 app.use(csrfProtection); // 2. Uygula
-app.use((req, res, next) => { // 3. Tüm view'lara aktar
+app.use((req, res, next) => {
+  console.log("Oluşturulan CSRF Token:", req.csrfToken());
   res.locals.csrfToken = req.csrfToken();
+  next();
+});
+
+app.use((req, res, next) => {
+  console.log("Session ID:", req.sessionID);
+  console.log("Gönderilen CSRF Token:", req.body._csrf || req.headers['csrf-token']);
   next();
 });
 
