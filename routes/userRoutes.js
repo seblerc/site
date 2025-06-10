@@ -22,7 +22,7 @@ const adminOnly = (req, res, next) => {
 // 🔓 Genel Sayfalar
 router.get('/', userController.anasayfa);
 router.get('/index', userController.anasayfa);
-router.get('/login', userController.loginSayfasi);
+router.get('/login', csrfProtection,userController.loginSayfasi);
 router.post('/login', csrfProtection, userController.loginIslem);
 router.get('/register',  userController.registerSayfasi);
 router.post('/register',  csrfProtection, userController.registerIslem);
