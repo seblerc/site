@@ -17,12 +17,7 @@ const userRoutes = require('./routes/userRoutes');
 
 const app = express();
 
-const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
-app.use(csrfProtection); // 2. Uygula
-app.use((req, res, next) => { // 3. Tüm view'lara aktar
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+
 // Güvenlik başlıkları
 app.use(helmet());
 
@@ -31,6 +26,12 @@ app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
+app.use(csrfProtection); // 2. Uygula
+app.use((req, res, next) => { // 3. Tüm view'lara aktar
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 // Oturum ayarları
 app.set('trust proxy', 1); // Render için mutlaka gerekli
 
