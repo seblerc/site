@@ -57,11 +57,17 @@ exports.loginSayfasi = (req, res) => {
   const mesaj = req.session.flashMesaj || null;
   req.session.flashMesaj = null; 
 
-  res.render('login', { mesaj });
+  res.render('login', {
+  mesaj,
+  csrfToken: req.csrfToken()
+});
 };
 
 exports.registerSayfasi = (req, res) => {
-  res.render('register', { mesaj: null });
+  res.render('register', {
+  mesaj: null,
+  csrfToken: req.csrfToken()
+});
 };
 
 exports.loginIslem = async (req, res) => {
