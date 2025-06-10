@@ -1,0 +1,260 @@
+<%- include('layout') %>
+<a href="/" class="logo-container">
+  <img src="/uploads/logo.png" alt="Site Logosu">
+</a>
+
+<style>
+  .logo-container {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 200;
+  }
+
+  .logo-container img {
+    height: 38px;
+    width: auto;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<style>
+  .bilgi-bar {
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 15px;
+    gap: 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .bilgi-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .saat-kutu {
+    background-color: #1d4f91;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .yesil { color: green; }
+  .kirmizi { color: red; }
+</style>
+
+<div class="bilgi-bar">
+  <span>🌤️ <span id="havaDurumu">Yükleniyor...</span></span>
+  <span class="vakit-kapsayici">🕌 Sabah: <span class="saat-kutu" data-saat="04:12">04:12</span></span>
+  <span class="vakit-kapsayici">🕌 Öğle: <span class="saat-kutu" data-saat="12:47">12:47</span></span>
+  <span class="vakit-kapsayici">🕌 İkindi: <span class="saat-kutu" data-saat="16:28">16:28</span></span>
+  <span class="vakit-kapsayici">🕌 Akşam: <span class="saat-kutu" data-saat="20:15">20:15</span></span>
+  <span class="vakit-kapsayici">🕌 Yatsı: <span class="saat-kutu" data-saat="21:42">21:42</span></span>
+  <span>Bist <span class="yesil">▲ 9.668,36</span></span>
+  <span>Dolar <span class="kirmizi">▼ 38,8447</span></span>
+  <span>Euro <span class="yesil">▲ 43,7475</span></span>
+  <span>Altın <span class="yesil">▲ 4.041,848</span></span>
+  <span>Bitcoin <span class="kirmizi">▼ $104.535</span></span>
+</div>
+<h2 style="text-align:center;">🖼️ Galeri</h2>
+
+<style>
+  .galeri-kapsayici {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    max-width: 1000px;
+    margin: 30px auto;
+    justify-content: center;
+  }
+
+  .galeri-kutu {
+    width: 220px;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .galeri-kutu img {
+    width: 100%;
+    height: 150px;
+    object-fit: cover;
+    border-radius: 6px;
+    transition: transform 0.2s;
+  }
+
+  .galeri-kutu img:hover {
+    transform: scale(1.05);
+  }
+
+  .galeri-kutu small {
+    display: block;
+    margin-top: 6px;
+    color: #555;
+  }
+
+  .modal {
+    display: none;
+    position: fixed;
+    z-index: 999;
+    padding-top: 80px;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0,0,0,0.9);
+  }
+
+  .modal-content {
+    display: block;
+    margin: auto;
+    max-width: 90%;
+    max-height: 80vh;
+    border-radius: 8px;
+  }
+
+  .modal-close {
+    position: absolute;
+    top: 30px;
+    right: 40px;
+    color: #fff;
+    font-size: 30px;
+    font-weight: bold;
+    cursor: pointer;
+  }
+
+  .modal-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 36px;
+    color: white;
+    cursor: pointer;
+    z-index: 1000;
+    user-select: none;
+  }
+
+  .modal-arrow.left {
+    left: 20px;
+  }
+
+  .modal-arrow.right {
+    right: 20px;
+  }
+</style>
+
+<div class="galeri-kapsayici">
+  <% haberler.forEach((h, i) => { %>
+    <% if (h.resim) { %>
+      <div class="galeri-kutu">
+        <img src="/uploads/<%= h.resim %>" alt="<%= h.baslik %>" class="galeriResim" data-index="<%= i %>">
+        <small><a href="/haber/<%= h.slug %>"><%= h.baslik %></a></small>
+      </div>
+    <% } %>
+  <% }) %>
+</div>
+
+<div id="lightbox" class="modal" onclick="kapatModal()">
+  <span class="modal-close">✖</span>
+  <span class="modal-arrow left" id="prevBtn">◀</span>
+  <img class="modal-content" id="lightboxImg">
+  <span class="modal-arrow right" id="nextBtn">▶</span>
+</div>
+
+<script>
+  const resimler = Array.from(document.querySelectorAll('.galeriResim')).map(img => img.src);
+  let currentIndex = 0;
+
+  const lightbox = document.getElementById('lightbox');
+  const lightboxImg = document.getElementById('lightboxImg');
+
+  document.querySelectorAll('.galeriResim').forEach((img, i) => {
+    img.addEventListener('click', (e) => {
+      e.stopPropagation();
+      currentIndex = i;
+      lightboxImg.src = resimler[i];
+      lightbox.style.display = 'flex';
+    });
+  });
+
+  function kapatModal() {
+    lightbox.style.display = 'none';
+  }
+
+  document.getElementById('nextBtn').onclick = function(e) {
+    e.stopPropagation();
+    currentIndex = (currentIndex + 1) % resimler.length;
+    lightboxImg.src = resimler[currentIndex];
+  };
+
+  document.getElementById('prevBtn').onclick = function(e) {
+    e.stopPropagation();
+    currentIndex = (currentIndex - 1 + resimler.length) % resimler.length;
+    lightboxImg.src = resimler[currentIndex];
+  };
+</script>
+
+<div style="max-width: 1000px; margin: 20px auto; text-align: center;">
+  <a href="/" style="display: inline-block; padding: 10px 20px; background: #d9f7d6; color: #333; border: 1px solid #a2cfa1; border-radius: 5px; text-decoration: none; font-weight: bold;">
+    🏠 Anasayfaya Dön
+  </a>
+</div>
+
+<script>
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=41.2867&longitude=36.33&current_weather=true")
+    .then(res => res.json())
+    .then(data => {
+      const temp = data.current_weather.temperature;
+      const icon = "🌡️";
+      document.getElementById("havaDurumu").innerText = `${icon} ${temp}°C`;
+    })
+    .catch(() => {
+      document.getElementById("havaDurumu").innerText = "☁️ Bilgi yok";
+    });
+
+  function parseSaat(saatStr) {
+    const [saat, dakika] = saatStr.split(":").map(Number);
+    const hedef = new Date();
+    hedef.setHours(saat, dakika, 0, 0);
+    return hedef;
+  }
+
+  function guncelVakitSec() {
+    const simdi = new Date();
+    const vakitler = document.querySelectorAll(".saat-kutu");
+    let sonraki = null;
+
+    vakitler.forEach(kutu => {
+      const hedefZaman = parseSaat(kutu.dataset.saat);
+      if (!sonraki && hedefZaman > simdi) {
+        sonraki = kutu;
+      }
+    });
+
+    if (!sonraki) {
+      sonraki = vakitler[0];
+    }
+
+    document.querySelectorAll(".vakit-kapsayici").forEach(span => {
+      span.style.display = "none";
+    });
+
+    sonraki.parentElement.style.display = "flex";
+    sonraki.style.backgroundColor = '#ff9900';
+    sonraki.style.color = 'white';
+  }
+
+  guncelVakitSec();
+</script>

@@ -1,0 +1,195 @@
+<%- include("layout") %>
+<a href="/" class="logo-container">
+  <img src="/uploads/logo.png" alt="Site Logosu">
+</a>
+
+<style>
+  .logo-container {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 200;
+  }
+
+  .logo-container img {
+    height: 38px;
+    width: auto;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.05);
+  }
+</style>
+<style>
+  .profil-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    font-size: 18px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .profil-container input[type="text"],
+  .profil-container input[type="password"],
+  .profil-container input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+  .profil-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .profil-container button:hover {
+    background-color: #2980b9;
+  }
+
+  .geri-don-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #d4f4d4;
+    color: #000;
+    border: 1px solid #9be29b;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .geri-don-btn:hover {
+    background-color: #bdecbc;
+  }
+</style>
+<style>
+  .bilgi-bar {
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 15px;
+    gap: 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .bilgi-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .saat-kutu {
+    background-color: #1d4f91;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .yesil { color: green; }
+  .kirmizi { color: red; }
+</style>
+
+<div class="bilgi-bar">
+  <span>🌤️ <span id="havaDurumu">Yükleniyor...</span></span>
+  <span class="vakit-kapsayici">🕌 Sabah: <span class="saat-kutu" data-saat="04:12">04:12</span></span>
+  <span class="vakit-kapsayici">🕌 Öğle: <span class="saat-kutu" data-saat="12:47">12:47</span></span>
+  <span class="vakit-kapsayici">🕌 İkindi: <span class="saat-kutu" data-saat="16:28">16:28</span></span>
+  <span class="vakit-kapsayici">🕌 Akşam: <span class="saat-kutu" data-saat="20:15">20:15</span></span>
+  <span class="vakit-kapsayici">🕌 Yatsı: <span class="saat-kutu" data-saat="21:42">21:42</span></span>
+  <span>Bist <span class="yesil">▲ 9.668,36</span></span>
+  <span>Dolar <span class="kirmizi">▼ 38,8447</span></span>
+  <span>Euro <span class="yesil">▲ 43,7475</span></span>
+  <span>Altın <span class="yesil">▲ 4.041,848</span></span>
+  <span>Bitcoin <span class="kirmizi">▼ $104.535</span></span>
+</div>
+<div class="profil-container">
+  <h2>Profil Bilgileri</h2>
+
+  <form action="/profil" method="POST" enctype="multipart/form-data">
+    
+
+    <label>İsim:</label>
+    <input type="text" name="isim" value="<%= kullanici.isim %>" required>
+
+    <label>Yeni Şifre:</label>
+    <input type="password" name="sifre" placeholder="Yeni şifre">
+
+    <label>Profil Fotoğrafı:</label><br>
+    <% if (kullanici.profil_resim) { %>
+      <img src="/uploads/<%= kullanici.profil_resim %>" alt="Profil Fotoğrafı" width="100"><br>
+    <% } %>
+    <input type="file" name="profil_resim" accept="image/*">
+
+    <button type="submit">Güncelle</button>
+  </form>
+
+  <% if (mesaj) { %>
+    <p><%= mesaj %></p>
+  <% } %>
+
+  <a href="/" class="geri-don-btn">🏠 Anasayfaya Dön</a>
+</div>
+
+<script>
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=41.2867&longitude=36.33&current_weather=true")
+    .then(res => res.json())
+    .then(data => {
+      const temp = data.current_weather.temperature;
+      const icon = "🌡️";
+      document.getElementById("havaDurumu").innerText = `${icon} ${temp}°C`;
+    })
+    .catch(() => {
+      document.getElementById("havaDurumu").innerText = "☁️ Bilgi yok";
+    });
+
+  function parseSaat(saatStr) {
+    const [saat, dakika] = saatStr.split(":").map(Number);
+    const hedef = new Date();
+    hedef.setHours(saat, dakika, 0, 0);
+    return hedef;
+  }
+
+  function guncelVakitSec() {
+    const simdi = new Date();
+    const vakitler = document.querySelectorAll(".saat-kutu");
+    let sonraki = null;
+
+    vakitler.forEach(kutu => {
+      const hedefZaman = parseSaat(kutu.dataset.saat);
+      if (!sonraki && hedefZaman > simdi) {
+        sonraki = kutu;
+      }
+    });
+
+    if (!sonraki) {
+      sonraki = vakitler[0];
+    }
+
+    document.querySelectorAll(".vakit-kapsayici").forEach(span => {
+      span.style.display = "none";
+    });
+
+    sonraki.parentElement.style.display = "flex";
+    sonraki.style.backgroundColor = '#ff9900';
+    sonraki.style.color = 'white';
+  }
+
+  guncelVakitSec();
+</script>

@@ -1,0 +1,49 @@
+<%- include("layout") %>
+
+<h2>📢 Duyuru Ekle</h2>
+<form action="/admin/duyuru-ekle" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <label>Duyuru Başlığı:</label><br>
+  <input type="text" name="baslik" required><br><br>
+
+  <label>Duyuru İçeriği:</label><br>
+  <textarea name="icerik" rows="4" required></textarea><br><br>
+
+  <button type="submit">Duyuruyu Yayınla</button>
+</form>
+
+<hr>
+
+<h2>🛠 Haber Ekle</h2>
+<form action="/admin/haber-ekle" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <label>Başlık:</label><br>
+  <input type="text" name="baslik" required><br><br>
+
+  <label>İçerik:</label><br>
+  <textarea name="icerik" id="haberEditor" rows="10" required></textarea><br><br>
+
+  <label>Kategori:</label><br>
+  <select name="kategori_id" required>
+    <% kategoriler.forEach(k => { %>
+      <option value="<%= k.id %>"><%= k.isim %></option>
+    <% }) %>
+  </select><br><br>
+
+  <label>Görsel Yükle (Kapak):</label><br>
+  <input type="file" name="resim" accept="image/*" required><br><br>
+
+  <button type="submit">Haberi Ekle</button>
+</form>
+
+<script src="https://cdn.ckeditor.com/4.21.0/full/ckeditor.js"></script>
+<script>
+  CKEDITOR.replace('haberEditor', {
+    filebrowserUploadUrl: '/upload-image',
+    filebrowserUploadMethod: 'form'
+  });
+</script>
+
+<a href="/">← Anasayfaya Dön</a>

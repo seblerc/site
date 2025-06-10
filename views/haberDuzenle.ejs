@@ -1,0 +1,28 @@
+<h2>🛠️ Haberi Düzenle</h2>
+<form action="/haber/duzenle/<%= haber.id %>" method="POST" enctype="multipart/form-data">
+  
+  <label>Başlık:</label><br>
+  <input type="text" name="baslik" value="<%= haber.baslik %>" required><br><br>
+
+  <label>İçerik:</label><br>
+  <textarea name="icerik" rows="6" required><%= haber.icerik %></textarea><br><br>
+
+  <label>Kategori:</label><br>
+  <select name="kategori_id" required>
+    <% kategoriler.forEach(k => { %>
+      <option value="<%= k.id %>" <%= k.id === haber.kategori_id ? "selected" : "" %>><%= k.isim %></option>
+    <% }) %>
+  </select><br><br>
+
+  <% if (haber.resim) { %>
+  <img src="/uploads/<%= haber.resim %>" width="200"><br>
+  <input type="hidden" name="mevcutResim" value="<%= haber.resim %>">
+<% } %>
+
+  <label>Yeni Resim (değiştirmek istersen):</label><br>
+  <input type="file" name="resim"><br><br>
+
+  <button type="submit">Kaydet</button>
+</form>
+
+<a href="/" style="display: inline-block; margin-bottom: 15px; background: #d9f7d6; padding: 8px 15px; border: 1px solid #a2cfa1; border-radius: 5px; text-decoration: none; color: #333;">🏠 Anasayfaya Dön</a>
