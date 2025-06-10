@@ -9,7 +9,12 @@ const csrf = require('csurf');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
 
-
+const csrfProtection = csrf({ cookie: true }); // 1. Oluştur
+app.use(csrfProtection); // 2. Uygula
+app.use((req, res, next) => { // 3. Tüm view'lara aktar
+  res.locals.csrfToken = req.csrfToken();
+  next();
+});
 
 const sitemapRoutes = require('./routes/sitemapRoutes');
 
