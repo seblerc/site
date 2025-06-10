@@ -373,7 +373,8 @@ exports.haberDuyuruEkleSayfasi = async (req, res) => {
   }
 
   const [kategoriler] = await db.query("SELECT * FROM kategoriler");
-  
+  console.log("Token gelmiş:", req.body._csrf);
+  console.log("Sunucudaki token:", req.csrfToken());
   res.render('ekle', {
     kullanici: req.session.kullanici,
     kategoriler,
