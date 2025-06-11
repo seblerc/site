@@ -136,7 +136,7 @@
   <h1><%= haber.baslik %></h1>
 
   <% if (haber.resim) { %>
-    <img src="/uploads/<%= haber.resim %>" alt="Haber Görseli">
+    <img src="<%= haber.resim %>" alt="Haber Görseli">
   <% } %>
 
   <p class="yazar">(<%= haber.yazar_adi %>)</p>
@@ -209,7 +209,7 @@
   <div class="yorum-kutu" style="margin-left:<%= girinti * 40 %>px;">
     <div class="yorum-baslik">
       <% if (y.profil_resim) { %>
-        <img src="/uploads/<%= y.profil_resim %>" width="40" height="40">
+        <img src="<%= y.profil_resim %>" width="40" height="40">
       <% } else { %>
         <div style="width:40px; height:40px; background:#ccc; border-radius:50%; margin-right:10px;"></div>
       <% } %>

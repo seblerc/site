@@ -323,7 +323,7 @@
   <% haberler.forEach(haber => { %>
     <div class="haber">
       <a href="/haber/<%= haber.slug %>">
-        <img src="/uploads/<%= haber.resim %>" alt="<%= haber.baslik %>">
+        <img src="<%= haber.resim %>" alt="<%= haber.baslik %>">
       </a>
       <div class="icerik">
         <h3><%= haber.baslik %></h3>

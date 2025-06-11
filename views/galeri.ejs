@@ -159,8 +159,7 @@
   <% haberler.forEach((h, i) => { %>
     <% if (h.resim) { %>
       <div class="galeri-kutu">
-        <img src="/uploads/<%= h.resim %>" alt="<%= h.baslik %>" class="galeriResim" data-index="<%= i %>">
-        <small><a href="/haber/<%= h.slug %>"><%= h.baslik %></a></small>
+<img src="<%= h.resim %>" alt="<%= h.baslik %>" class="galeriResim" data-index="<%= i %>">        <small><a href="/haber/<%= h.slug %>"><%= h.baslik %></a></small>
       </div>
     <% } %>
   <% }) %>

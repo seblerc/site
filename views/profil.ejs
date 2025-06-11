@@ -133,8 +133,8 @@
 
     <label>Profil Fotoğrafı:</label><br>
     <% if (kullanici.profil_resim) { %>
-      <img src="/uploads/<%= kullanici.profil_resim %>" alt="Profil Fotoğrafı" width="100"><br>
-    <% } %>
+  <img src="<%= kullanici.profil_resim %>" alt="Profil Fotoğrafı" width="100"><br>
+<% } %>
     <input type="file" name="profil_resim" accept="image/*">
 
     <button type="submit">Güncelle</button>

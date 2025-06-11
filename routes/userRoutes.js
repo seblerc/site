@@ -55,11 +55,18 @@ router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil
 // 🖼️ Görsel Yükleme (CKEditor gibi)
 router.post('/upload-image', adminOnly, upload.single('upload'), (req, res) => {
   if (!req.file) {
-    return res.status(400).json({ uploaded: false, error: { message: 'Dosya yüklenemedi' } });
+    return res.status(400).json({
+      uploaded: false,
+      error: { message: 'Dosya yüklenemedi' }
+    });
   }
 
-  const url = '/uploads/' + req.file.filename;
-  res.status(200).json({ uploaded: true, url });
+  const url = req.file.path; // ✅ Cloudinary'nin HTTPS URL'si
+
+  res.status(200).json({
+    uploaded: true,
+    url: url
+  });
 });
 
 // 💬 Yorumlar
