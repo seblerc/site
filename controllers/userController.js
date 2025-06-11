@@ -103,39 +103,45 @@ exports.loginIslem = async (req, res) => {
 exports.registerIslem = async (req, res) => {
   const { isim, email, sifre } = req.body;
 
-  
   const sifreGecerliMi = sifre.length >= 8 && /[A-Z]/.test(sifre) && /\d/.test(sifre);
   if (!sifreGecerliMi) {
     return res.render('register', {
-      mesaj: "❌ Şifre en az 8 karakter olmalı, en az bir büyük harf ve bir sayı içermelidir."
+      mesaj: "❌ Şifre en az 8 karakter olmalı, en az bir büyük harf ve bir sayı içermelidir.",
+      csrfToken: req.csrfToken()
     });
   }
 
   try {
-    
     const [emailKontrol] = await db.query("SELECT * FROM kullanicilar WHERE email = ?", [email]);
     if (emailKontrol.length > 0) {
-      return res.render('register', { mesaj: "❌ Bu e-posta zaten kayıtlı!" });
+      return res.render('register', {
+        mesaj: "❌ Bu e-posta zaten kayıtlı!",
+        csrfToken: req.csrfToken()
+      });
     }
 
-    
     const [isimKontrol] = await db.query("SELECT * FROM kullanicilar WHERE isim = ?", [isim]);
     if (isimKontrol.length > 0) {
-      return res.render('register', { mesaj: "❌ Bu isim zaten alınmış!" });
+      return res.render('register', {
+        mesaj: "❌ Bu isim zaten alınmış!",
+        csrfToken: req.csrfToken()
+      });
     }
 
-    const hashliSifre = await bcrypt.hash(sifre, 10); // kullanıcıyı veritabanına kaydetme
-    await db.query("INSERT INTO kullanicilar (isim, email, sifre, rol) VALUES (?, ?, ?, 'user')", [
-      isim,
-      email,
-      hashliSifre,
-    ]);
+    const hashliSifre = await bcrypt.hash(sifre, 10);
+    await db.query(
+      "INSERT INTO kullanicilar (isim, email, sifre, rol) VALUES (?, ?, ?, 'user')",
+      [isim, email, hashliSifre]
+    );
 
     req.session.flashMesaj = "✅ Kayıt başarılı, şimdi giriş yapabilirsin.";
     return res.redirect('/login');
   } catch (err) {
     console.error("Kayıt hatası:", err);
-    return res.render('register', { mesaj: "⚠️ Kayıt sırasında bir hata oluştu." });
+    return res.render('register', {
+      mesaj: "⚠️ Kayıt sırasında bir hata oluştu.",
+      csrfToken: req.csrfToken()
+    });
   }
 };
 
