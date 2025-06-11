@@ -77,26 +77,37 @@ exports.loginIslem = async (req, res) => {
     const [rows] = await db.query("SELECT * FROM kullanicilar WHERE email = ?", [email]);
 
     if (rows.length === 0) {
-      return res.render('login', { mesaj: "❌ E-posta bulunamadı!" });
+      return res.render('login', {
+        mesaj: "❌ E-posta bulunamadı!",
+        csrfToken: req.csrfToken()
+      });
     }
 
     const kullanici = rows[0];
 
-    
     if (kullanici.banli) {
-      return res.render('login', { mesaj: "🚫 Hesabınız engellenmiştir." });
+      return res.render('login', {
+        mesaj: "🚫 Hesabınız engellenmiştir.",
+        csrfToken: req.csrfToken()
+      });
     }
 
     const uyusuyorMu = await bcrypt.compare(sifre, kullanici.sifre);
     if (!uyusuyorMu) {
-      return res.render('login', { mesaj: "❌ Şifre yanlış!" });
+      return res.render('login', {
+        mesaj: "❌ Şifre yanlış!",
+        csrfToken: req.csrfToken()
+      });
     }
 
     req.session.kullanici = kullanici;
     return res.redirect('/index');
   } catch (err) {
     console.error("Giriş hatası:", err);
-    res.render('login', { mesaj: "⚠️ Sunucu hatası oluştu!" });
+    res.render('login', {
+      mesaj: "⚠️ Sunucu hatası oluştu!",
+      csrfToken: req.csrfToken()
+    });
   }
 };
 
