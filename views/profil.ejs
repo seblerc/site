@@ -123,7 +123,7 @@
   <h2>Profil Bilgileri</h2>
 
   <form action="/profil" method="POST" enctype="multipart/form-data">
-    
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
 
     <label>İsim:</label>
     <input type="text" name="isim" value="<%= kullanici.isim %>" required>
