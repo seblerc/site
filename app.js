@@ -15,16 +15,22 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
 
-// 🛡️ Güvenlik başlıkları
+// 🛡️ Güvenlik
 app.use(helmet());
 
-// 🧱 Temel middleware
+// 📂 Statik dosyalar ve veri
 app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// 📦 Session ayarları
+// 🧠 Layout sistemi
+app.use(expressLayouts);
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+app.set('layout', 'layout');
+
+// 🔑 Oturum ayarları
 app.set('trust proxy', 1);
 app.use(session({
   secret: process.env.SESSION_SECRET,
@@ -37,13 +43,7 @@ app.use(session({
   }
 }));
 
-// 🧱 Layout sistemi
-app.use(expressLayouts);
-app.set('view engine', 'ejs');
-app.set('views', path.join(__dirname, 'views'));
-app.set('layout', 'layout'); // layout.ejs varsayılan şablon
-
-// 🛡️ CSRF koruması
+// 🛡️ CSRF koruma (layout'tan SONRA koy!)
 app.use(csrf({ cookie: true }));
 app.use((req, res, next) => {
   try {
@@ -53,14 +53,14 @@ app.use((req, res, next) => {
       sameSite: isProd ? 'none' : 'lax',
       httpOnly: false
     });
-    res.locals.csrfToken = token; // Tüm EJS dosyalarında erişilebilir
+    res.locals.csrfToken = token;
   } catch (e) {
-    console.warn('CSRF token oluşturulamadı:', e.message);
+    console.warn("CSRF token oluşturulamadı:", e.message);
   }
   next();
 });
 
-// 🧠 Ziyaretçi takibi
+// 👁 Ziyaretçi takibi
 app.use(async (req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
   let cookieId = req.cookies.visitorId;
@@ -89,11 +89,11 @@ app.use(async (req, res, next) => {
   next();
 });
 
-// 🛣️ Rotalar
+// 🔀 Rotalar
 app.use('/', sitemapRoutes);
 app.use('/', userRoutes);
 
-// 🚀 Sunucu başlat
+// 🚀 Sunucuyu başlat
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🟢 Sunucu çalışıyor: http://localhost:${PORT}`);

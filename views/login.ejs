@@ -63,10 +63,7 @@
 
     <input type="email" name="email" placeholder="E-posta" required>
     <input type="password" name="sifre" placeholder="Şifre" required>
-
-    <!-- 🔐 reCAPTCHA -->
-    <div class="g-recaptcha" data-sitekey="<%= process.env.RECAPTCHA_SITE_KEY %>"></div>
-
+    
     <button type="submit">Giriş Yap</button>
 
     <% if (mesaj) { %>
