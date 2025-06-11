@@ -39,9 +39,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// 💉 CSRF KORUMA BURAYA
-const csrfProtection = csrf({ cookie: true });
-app.use(csrfProtection); // 🔴 EKLENMEMİŞ
+
 
 // 🧠 Layout sistemi
 app.use(expressLayouts);
@@ -67,6 +65,10 @@ app.use((req, res, next) => {
   );
   next();
 });
+
+// 💉 CSRF KORUMA BURAYA
+const csrfProtection = csrf({ cookie: true });
+app.use(csrfProtection); // 🔴 EKLENMEMİŞ
 
 // 👁 Ziyaretçi takibi
 app.use(async (req, res, next) => {
