@@ -334,7 +334,7 @@ if (req.session.kullanici) {
   ORDER BY y.parent_id ASC, y.tarih ASC
 `, [haber.id]);
 
-    res.render('haber-detay', { haber, kullanici: req.session.kullanici, yorumlar, favorideMi });
+    res.render('haber-detay', { haber, kullanici: req.session.kullanici, yorumlar, favorideMi,csrfToken: req.csrfToken() });
 
   } catch (err) {
     console.error("Haber detay hatası:", err);
