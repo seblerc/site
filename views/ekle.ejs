@@ -22,8 +22,8 @@
   <label>Başlık:</label><br>
   <input type="text" name="baslik" required><br><br>
 
-  <label>İçerik:</label><br>
-<textarea id="editor" name="icerik" required></textarea>
+ <label>İçerik:</label><br>
+<textarea id="editor" name="icerik" style="display: none;"></textarea>
 
   <label>Kategori:</label><br>
   <select name="kategori_id" required>
@@ -38,18 +38,33 @@
   <button type="submit">Haberi Ekle</button>
 </form>
 
-<!-- CKEditor 5 -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
-
-<textarea name="icerik" id="editor"></textarea>
-
 <script>
+  let editorInstance;
+
   window.addEventListener("load", () => {
     ClassicEditor
       .create(document.querySelector('#editor'), {
         ckfinder: {
-          uploadUrl: '/upload-image'  // Eğer özel upload yapacaksan (Multer vs)
+          uploadUrl: '/upload-image?_csrf=<%= csrfToken %>'
         }
+      })
+      .then(editor => {
+        editorInstance = editor;
+
+        document.querySelector('form').addEventListener('submit', function (e) {
+          const icerik = editor.getData().trim();
+
+          // Eğer içerik boşsa, formu gönderme
+          if (!icerik) {
+            alert("İçerik boş olamaz.");
+            e.preventDefault();
+            return;
+          }
+
+          // İçeriği gizli textarea'ya aktar
+          document.querySelector('#editor').value = icerik;
+        });
       })
       .catch(error => {
         console.error(error);
