@@ -24,7 +24,7 @@ router.get('/', userController.anasayfa);
 router.get('/index', userController.anasayfa);
 router.get('/login', csrfProtection,userController.loginSayfasi);
 router.post('/login', csrfProtection, userController.loginIslem);
-router.get('/register',  userController.registerSayfasi);
+router.get('/register',  csrfProtection, userController.registerSayfasi);
 router.post('/register',  csrfProtection, userController.registerIslem);
 router.get('/logout', userController.logout);
 
