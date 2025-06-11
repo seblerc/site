@@ -43,22 +43,6 @@ app.use(session({
   }
 }));
 
-// 🛡️ CSRF koruma (layout'tan SONRA koy!)
-app.use(csrf({ cookie: true }));
-app.use((req, res, next) => {
-  try {
-    const token = req.csrfToken();
-    res.cookie('_csrf', token, {
-      secure: isProd,
-      sameSite: isProd ? 'none' : 'lax',
-      httpOnly: false
-    });
-    res.locals.csrfToken = token;
-  } catch (e) {
-    console.warn("CSRF token oluşturulamadı:", e.message);
-  }
-  next();
-});
 
 // 👁 Ziyaretçi takibi
 app.use(async (req, res, next) => {
