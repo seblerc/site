@@ -169,12 +169,11 @@ exports.profilGuncelle = async (req, res) => {
 
   let profilResimYolu = null;
   if (req.file) {
-    profilResimYolu = req.file.filename; 
+    profilResimYolu = req.file.path; // ✅ Cloudinary URL
     req.session.kullanici.profil_resim = profilResimYolu;
   }
 
   try {
-    
     const alanlar = [];
     const degerler = [];
 
@@ -196,17 +195,19 @@ exports.profilGuncelle = async (req, res) => {
 
     degerler.push(req.session.kullanici.id);
 
-    await db.query(`UPDATE kullanicilar SET ${alanlar.join(", ")} WHERE id = ?`, degerler);
+    await db.query(
+      `UPDATE kullanicilar SET ${alanlar.join(", ")} WHERE id = ?`,
+      degerler
+    );
 
-    res.render('profil', {
+    res.render("profil", {
       kullanici: req.session.kullanici,
       mesaj: "Bilgiler güncellendi ✅",
       csrfToken: req.csrfToken()
-      
     });
   } catch (err) {
     console.error("Profil güncelleme hatası:", err);
-    res.render('profil', {
+    res.render("profil", {
       kullanici: req.session.kullanici,
       mesaj: "Hata oluştu!",
       csrfToken: req.csrfToken()
@@ -283,7 +284,7 @@ exports.haberEkle = async (req, res) => {
   const { baslik, icerik, kategori_id } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
-  const resim = req.file ? req.file.filename : null;
+  const resim = req.file ? req.file.path : null; // ✅ Cloudinary tam URL
   const yazar_id = req.session.kullanici.id;
 
   try {
