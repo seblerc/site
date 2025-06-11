@@ -286,7 +286,7 @@ exports.haberEkle = async (req, res) => {
   const tarih = new Date();
   const resim = req.file ? req.file.path : null; // ✅ Cloudinary tam URL
   const yazar_id = req.session.kullanici.id;
-
+console.log("YÜKLENEN GÖRSEL:", req.file);
   try {
     await db.query(`
       INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim)

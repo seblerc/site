@@ -57,7 +57,12 @@ app.use(session({
     sameSite: isProd ? 'none' : 'lax'
   }
 }));
-
+app.use((req, res, next) => {
+  res.setHeader("Content-Security-Policy", 
+    "default-src 'self'; img-src 'self' https://res.cloudinary.com data:; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline';"
+  );
+  next();
+});
 
 // 👁 Ziyaretçi takibi
 app.use(async (req, res, next) => {
