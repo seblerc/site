@@ -186,7 +186,7 @@ exports.profilGuncelle = async (req, res) => {
 
   let profilResimYolu = null;
   if (req.file) {
-    profilResimYolu = req.file.path; // ✅ Cloudinary URL
+    profilResimYolu = req.file.path;
     req.session.kullanici.profil_resim = profilResimYolu;
   }
 
@@ -301,7 +301,7 @@ exports.haberEkle = async (req, res) => {
   const { baslik, icerik, kategori_id } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
-  const resim = req.file ? req.file.path || req.file.secure_url : null; // ✅
+  const resim = req.file ? req.file.path : null;
   const yazar_id = req.session.kullanici.id;
 console.log("YÜKLENEN GÖRSEL:", req.file);
   try {
