@@ -1,6 +1,6 @@
 <h2>🛠️ Haberi Düzenle</h2>
 <form action="/haber/duzenle/<%= haber.id %>" method="POST" enctype="multipart/form-data">
-  
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
   <label>Başlık:</label><br>
   <input type="text" name="baslik" value="<%= haber.baslik %>" required><br><br>
 

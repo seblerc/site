@@ -564,7 +564,8 @@ exports.haberDuzenleSayfasi = async (req, res) => {
     res.render('haberDuzenle', {
       haber,
       kategoriler,
-      kullanici
+      kullanici,
+      csrfToken: req.csrfToken(),
     });
   } catch (err) {
     console.error(err);
