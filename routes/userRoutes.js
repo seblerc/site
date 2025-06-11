@@ -37,7 +37,7 @@ router.get('/admin', csrfProtection, adminOnly, userController.adminPanel);
 router.post('/admin/rol-guncelle', adminOnly, csrfProtection, userController.rolGuncelle);
 router.post('/admin/banla/:id', adminOnly, csrfProtection, userController.kullaniciBanla);
 router.post('/admin/sil/:id', adminOnly, csrfProtection, userController.kullaniciSil);
-router.post('/admin/haber-ekle', upload.single('resim'), adminOnly, userController.haberEkle);
+router.post('/admin/haber-ekle', upload.single('resim'), adminOnly, csrfProtection, userController.haberEkle);
 
 router.post('/admin/duyuru-ekle', csrfProtection, adminOnly, userController.duyuruEkle);
 router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruEkleSayfasi);

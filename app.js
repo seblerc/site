@@ -100,10 +100,7 @@ app.use(async (req, res, next) => {
 // 💉 CSRF KORUMA BURAYA
 const csrfProtection = csrf({ cookie: true });
 app.use(csrfProtection);
-app.use((req, res, next) => {
-  res.locals.csrfToken = req.csrfToken();
-  next();
-});
+
 
 // 🔀 Rotalar
 app.use('/', sitemapRoutes);
