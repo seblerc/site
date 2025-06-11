@@ -38,11 +38,22 @@
   <button type="submit">Haberi Ekle</button>
 </form>
 
-<script src="https://cdn.ckeditor.com/4.21.0/full/ckeditor.js"></script>
+<!-- CKEditor 5 -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+
+<textarea name="icerik" id="editor"></textarea>
+
 <script>
-  CKEDITOR.replace('haberEditor', {
-    filebrowserUploadUrl: '/upload-image',
-    filebrowserUploadMethod: 'form'
+  window.addEventListener("load", () => {
+    ClassicEditor
+      .create(document.querySelector('#editor'), {
+        ckfinder: {
+          uploadUrl: '/upload-image'  // Eğer özel upload yapacaksan (Multer vs)
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
   });
 </script>
 
