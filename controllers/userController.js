@@ -301,7 +301,7 @@ exports.haberEkle = async (req, res) => {
   const { baslik, icerik, kategori_id } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
-  const resim = req.file ? req.file.path : null; // ✅ Cloudinary tam URL
+  const resim = req.file ? req.file.path || req.file.secure_url : null; // ✅
   const yazar_id = req.session.kullanici.id;
 console.log("YÜKLENEN GÖRSEL:", req.file);
   try {
