@@ -221,7 +221,7 @@ exports.adminPanel = async (req, res) => {
 
   try {
     const [kullanicilar] = await db.query("SELECT * FROM kullanicilar");
-    res.render('admin', { kullanici: req.session.kullanici, kullanicilar, mesaj: null });
+    res.render('admin', { kullanici: req.session.kullanici, kullanicilar, mesaj: null, csrfToken: req.csrfToken() });
   } catch (err) {
     console.error("Admin panel hatası:", err);
     res.send("Veritabanı hatası");
