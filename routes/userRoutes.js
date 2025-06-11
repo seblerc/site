@@ -29,11 +29,11 @@ router.post('/register',  csrfProtection, userController.registerIslem);
 router.get('/logout', userController.logout);
 
 // 👤 Profil İşlemleri
-router.get('/profil', userController.profilSayfasi);
+router.get('/profil', csrfProtection, userController.profilSayfasi);
 router.post('/profil', upload.single('profil_resim'),csrfProtection,  userController.profilGuncelle);
 
 // 🧠 Admin Panel
-router.get('/admin', adminOnly, userController.adminPanel);
+router.get('/admin', csrfProtection, adminOnly, userController.adminPanel);
 router.post('/admin/rol-guncelle', adminOnly, csrfProtection, userController.rolGuncelle);
 router.post('/admin/banla/:id', adminOnly, csrfProtection, userController.kullaniciBanla);
 router.post('/admin/sil/:id', adminOnly, csrfProtection, userController.kullaniciSil);
@@ -47,7 +47,7 @@ router.post(
 router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruEkleSayfasi);
 
 // 📄 Haber İşlemleri
-router.get('/haber/:slug', userController.haberDetay);
+router.get('/haber/:slug', csrfProtection, userController.haberDetay);
 router.get('/haber/duzenle/:id', adminOnly, userController.haberDuzenleSayfasi);
 router.post('/haber/duzenle/:id', adminOnly, upload.single('resim'), userController.haberDuzenleIslem);
 router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil);
