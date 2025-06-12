@@ -337,14 +337,6 @@ exports.haberEkle = async (req, res) => {
   }
 };
 
-function slugify(text) {
-  return text.toString().toLowerCase()
-    .replace(/\s+/g, '-')           
-    .replace(/[^\w\-]+/g, '')       
-    .replace(/\-\-+/g, '-')         
-    .replace(/^-+/, '')             
-    .replace(/-+$/, '');            
-}
 
 exports.haberDetay = async (req, res) => {
   const slug = req.params.slug;
