@@ -304,25 +304,31 @@ exports.haberEkle = async (req, res) => {
   const { baslik, icerik, kategori_id } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
-  const resim = req.file ? req.file.path : null;
+  const seoAd = slugify(baslik) + path.extname(req.file.originalname);
+const resim = req.file ? `/resimler/${seoAd}` : null;
   const yazar_id = req.session.kullanici.id;
 
   try {
     // 📦 SEO GÖRSEL MAP GÜNCELLE
     if (req.file && req.file.path.includes('cloudinary.com')) {
-      const seoMapPath = path.join(__dirname, '../seoImages.json');
-      const seoName = slugify(baslik) + path.extname(req.file.originalname);
-      const cloudinaryId = req.file.filename || path.basename(req.file.path); // filename varsa onu kullan yoksa path'ten ayıkla
+  const seoMapPath = path.join(__dirname, '../seoImages.json');
+  const seoName = slugify(baslik) + path.extname(req.file.originalname);
+  const cloudinaryId = path.basename(req.file.path); // filename yoksa path'ten çek
 
-      // JSON oku ve yaz
-      let imageMap = {};
-      if (fs.existsSync(seoMapPath)) {
-        const raw = fs.readFileSync(seoMapPath);
-        imageMap = JSON.parse(raw);
-      }
-      imageMap[seoName] = cloudinaryId;
-      fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
+  let imageMap = {};
+  if (fs.existsSync(seoMapPath)) {
+    try {
+      const raw = fs.readFileSync(seoMapPath, 'utf-8');
+      imageMap = JSON.parse(raw.trim() || '{}');
+    } catch (err) {
+      console.error('SEO JSON parse hatası:', err);
+      imageMap = {};
     }
+  }
+
+  imageMap[seoName] = cloudinaryId;
+  fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
+}
 
     // 📥 HABER VERİTABANI EKLE
     await db.query(`
