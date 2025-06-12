@@ -1,5 +1,3 @@
-
-
 <h2>📢 Duyuru Ekle</h2>
 <form action="/admin/duyuru-ekle" method="POST">
   <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -22,8 +20,9 @@
   <label>Başlık:</label><br>
   <input type="text" name="baslik" required><br><br>
 
- <label>İçerik:</label><br>
-<textarea id="editor" name="icerik" style="display: none;"></textarea>
+  <label>İçerik:</label><br>
+  <!-- CKEditor içeriği buraya aktarılacak -->
+  <textarea id="editor" name="icerik" style="display: none;"></textarea>
 
   <label>Kategori:</label><br>
   <select name="kategori_id" required>
@@ -38,6 +37,7 @@
   <button type="submit">Haberi Ekle</button>
 </form>
 
+<!-- CKEditor -->
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script>
   let editorInstance;
@@ -52,22 +52,20 @@
       .then(editor => {
         editorInstance = editor;
 
-        document.querySelector('form').addEventListener('submit', function (e) {
+        document.querySelector('form[action="/admin/haber-ekle"]').addEventListener('submit', function (e) {
           const icerik = editor.getData().trim();
 
-          // Eğer içerik boşsa, formu gönderme
           if (!icerik) {
             alert("İçerik boş olamaz.");
             e.preventDefault();
             return;
           }
 
-          // İçeriği gizli textarea'ya aktar
           document.querySelector('#editor').value = icerik;
         });
       })
       .catch(error => {
-        console.error(error);
+        console.error("CKEditor hatası:", error);
       });
   });
 </script>

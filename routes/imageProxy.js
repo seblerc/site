@@ -9,14 +9,37 @@ const mapPath = path.join(__dirname, '../seoImages.json');
 router.get('/:filename', (req, res) => {
   const filename = req.params.filename;
 
-  const raw = fs.readFileSync(mapPath);
-  const imageMap = JSON.parse(raw);
+  // 🧠 JSON oku ve fallback ver
+  let imageMap = {};
+  try {
+    if (fs.existsSync(mapPath)) {
+      const raw = fs.readFileSync(mapPath, 'utf-8');
+      imageMap = JSON.parse(raw.trim() || '{}');
+    }
+  } catch (err) {
+    console.error('🧨 JSON okuma hatası:', err);
+    return res.status(500).send('Görsel yapılandırma hatası');
+  }
 
-  const cloudinaryPublicId = imageMap[filename];
-  if (!cloudinaryPublicId) return res.status(404).send('Görsel bulunamadı');
+  const cloudinaryFilename = imageMap[filename];
+  if (!cloudinaryFilename) {
+    return res.status(404).send('Görsel bulunamadı');
+  }
 
-  const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/v1749667679/haber_gorselleri/${cloudinaryPublicId}`;
-  request.get(cloudinaryUrl).pipe(res);
+  // 📦 Cloudinary'den yönlendir
+  const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/v1749667679/haber_gorselleri/${cloudinaryFilename}`;
+
+  // 🔁 Görseli proxy olarak aktar
+  request.get(cloudinaryUrl)
+    .on('response', (proxiedRes) => {
+      // Orijinal content-type (image/png vs.) korunsun
+      res.setHeader('Content-Type', proxiedRes.headers['content-type']);
+    })
+    .on('error', (err) => {
+      console.error('🧨 Cloudinary istek hatası:', err);
+      res.status(500).send('Görsel alınamadı');
+    })
+    .pipe(res);
 });
 
 module.exports = router;

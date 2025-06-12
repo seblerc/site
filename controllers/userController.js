@@ -304,35 +304,48 @@ exports.haberEkle = async (req, res) => {
   const { baslik, icerik, kategori_id } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
-  const seoAd = slugify(baslik) + path.extname(req.file.originalname);
-const resim = req.file ? `/resimler/${seoAd}` : null;
   const yazar_id = req.session.kullanici.id;
 
+  let resim = null;
+
   try {
-    // 📦 SEO GÖRSEL MAP GÜNCELLE
+    // Eğer görsel yüklendiyse ve cloudinary linki içeriyorsa
     if (req.file && req.file.path.includes('cloudinary.com')) {
-  const seoMapPath = path.join(__dirname, '../seoImages.json');
-  const seoName = slugify(baslik) + path.extname(req.file.originalname);
-  const cloudinaryId = path.basename(req.file.path);
+      const seoMapPath = path.join(__dirname, '../seoImages.json');
 
-  console.log("💾 SEO JSON yazılacak:", seoName, '→', cloudinaryId);
+      const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
+      const cloudinaryId = path.basename(req.file.path); // örn: viego-3-star.png
 
-  let imageMap = {};
-  if (fs.existsSync(seoMapPath)) {
-    try {
-      const raw = fs.readFileSync(seoMapPath, 'utf-8');
-      imageMap = JSON.parse(raw.trim() || '{}');
-    } catch (err) {
-      console.error('SEO JSON parse hatası:', err);
-      imageMap = {};
+      // Logla ne yazıyoruz
+      console.log("💾 SEO JSON yazılacak:", seoName, '→', cloudinaryId);
+
+      // Mevcut JSON'u oku
+      let imageMap = {};
+      if (fs.existsSync(seoMapPath)) {
+        try {
+          const raw = fs.readFileSync(seoMapPath, 'utf-8');
+          imageMap = JSON.parse(raw.trim() || '{}');
+        } catch (err) {
+          console.error('SEO JSON parse hatası:', err);
+          imageMap = {};
+        }
+      }
+
+      // JSON'u güncelle
+      imageMap[seoName] = cloudinaryId;
+      fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
+
+      // Veritabanı için resim yolunu hazırla
+      resim = `/resimler/${seoName}`;
+
+      // Ek log
+      console.log("resim kolonuna yazılacak:", resim);
+    } else if (req.file) {
+      // Cloudinary değilse fallback
+      resim = req.file.path;
     }
-  }
 
-  imageMap[seoName] = cloudinaryId;
-  fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
-}
-
-    // 📥 HABER VERİTABANI EKLE
+    // Veritabanına yaz
     await db.query(`
       INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -343,8 +356,6 @@ const resim = req.file ? `/resimler/${seoAd}` : null;
     console.error("Haber eklenemedi:", err);
     res.send("Haber eklenirken bir hata oluştu.");
   }
-  console.log("SEO dosyasına eklenecek:", seoName, cloudinaryId);
-console.log("resim kolonuna yazılacak:", resim);
 };
 
 

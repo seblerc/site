@@ -101,7 +101,8 @@ app.use(async (req, res, next) => {
 //const csrfProtection = csrf({ cookie: true });
 //app.use(csrfProtection);
 
-
+const imageProxyRoutes = require('./routes/imageProxy');
+app.use('/resimler', imageProxyRoutes);
 // 🔀 Rotalar
 app.use('/', sitemapRoutes);
 app.use('/', userRoutes);

@@ -26,10 +26,15 @@ const fileFilter = (req, file, cb) => {
 // Cloudinary storage ayarları
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
-  params: {
-    folder: 'haber_gorselleri',
-    allowed_formats: ['jpg', 'png', 'jpeg', 'webp']
-  },
+  params: (req, file) => {
+    return {
+      folder: 'haber_gorselleri',
+      allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
+      use_filename: true,           // ✅ Dosyanın adını kullan
+      unique_filename: false,       // ✅ Rastgele ek yapmasın
+      overwrite: false              // Aynı isim varsa yeni versiyon yaratmasın (opsiyonel)
+    };
+  }
 });
 
 const upload = multer({
