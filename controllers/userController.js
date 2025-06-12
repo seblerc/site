@@ -311,7 +311,7 @@ exports.haberEkle = async (req, res) => {
   try {
     // Eğer görsel yüklendiyse ve cloudinary linki içeriyorsa
     if (req.file && req.file.path.includes('cloudinary.com')) {
-      const seoMapPath = path.join(__dirname, '../seoImages.json');
+      const seoMapPath = path.join(process.cwd(), 'seoImages.json');
 
       const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
 const cloudinaryId = path.basename(req.file.path);
