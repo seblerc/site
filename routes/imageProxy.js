@@ -35,4 +35,7 @@ const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/haber_g
   }
 });
 
+console.log("📥 İstenen görsel:", filename);
+console.log("🧠 Cloudinary'den çağrılacak:", cloudinaryUrl);
+
 module.exports = router;
