@@ -4,6 +4,9 @@ const userController = require('../controllers/userController');
 const upload = require('../multer-config');
 const csrf = require('csurf');
 const csrfProtection = csrf({ cookie: true });
+const path = require('path');
+const slugify = require('slugify');
+const db = require('../db');
 
 // const { RecaptchaV2 } = require('express-recaptcha');
 // const recaptcha = new RecaptchaV2(
@@ -49,7 +52,7 @@ router.post('/haber/duzenle/:id', adminOnly, csrfProtection, upload.single('resi
 router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil);
 
 // 🖼️ Görsel Yükleme (CKEditor gibi)
-router.post('/upload-image', adminOnly, upload.single('upload'), (req, res) => {
+router.post('/upload-image', adminOnly, upload.single('upload'), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({
       uploaded: false,
@@ -57,11 +60,24 @@ router.post('/upload-image', adminOnly, upload.single('upload'), (req, res) => {
     });
   }
 
-  const url = req.file.path; // ✅ Cloudinary'nin HTTPS URL'si
+  const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
+  const cloudinaryId = path.basename(req.file.path);
+
+  try {
+    await db.query(
+      'REPLACE INTO seo_images (seo_name, cloudinary_id) VALUES (?, ?)',
+      [seoName, cloudinaryId]
+    );
+    console.log("📦 CKEditor görseli kayıt edildi:", seoName);
+  } catch (err) {
+    console.error("❌ CKEditor görseli DB’ye yazılamadı:", err);
+  }
+
+  const url = `/resimler/${seoName}`; // ☠️ Maskeleme burada başlıyor
 
   res.status(200).json({
     uploaded: true,
-    url: url
+    url
   });
 });
 
