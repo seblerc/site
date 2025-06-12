@@ -313,7 +313,9 @@ const resim = req.file ? `/resimler/${seoAd}` : null;
     if (req.file && req.file.path.includes('cloudinary.com')) {
   const seoMapPath = path.join(__dirname, '../seoImages.json');
   const seoName = slugify(baslik) + path.extname(req.file.originalname);
-  const cloudinaryId = path.basename(req.file.path); // filename yoksa path'ten çek
+  const cloudinaryId = path.basename(req.file.path);
+
+  console.log("💾 SEO JSON yazılacak:", seoName, '→', cloudinaryId);
 
   let imageMap = {};
   if (fs.existsSync(seoMapPath)) {
@@ -341,6 +343,8 @@ const resim = req.file ? `/resimler/${seoAd}` : null;
     console.error("Haber eklenemedi:", err);
     res.send("Haber eklenirken bir hata oluştu.");
   }
+  console.log("SEO dosyasına eklenecek:", seoName, cloudinaryId);
+console.log("resim kolonuna yazılacak:", resim);
 };
 
 
