@@ -17,7 +17,7 @@ router.get('/:filename', async (req, res) => {
     }
 
     const cloudinaryFilename = rows[0].cloudinary_id;
-    const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/v1749667679/haber_gorselleri/${cloudinaryFilename}`;
+const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/haber_gorselleri/${cloudinaryFilename}`;
 
     request.get(cloudinaryUrl)
       .on('response', (proxiedRes) => {
