@@ -313,6 +313,9 @@ exports.haberEkle = async (req, res) => {
     if (req.file && req.file.path.includes('cloudinary.com')) {
       const seoMapPath = path.join(process.cwd(), 'seoImages.json');
 
+      console.log("➡️ JSON dosya yolu:", seoMapPath);
+console.log("➡️ Dosya var mı?", fs.existsSync(seoMapPath));
+
       const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
 const cloudinaryId = path.basename(req.file.path);
 
@@ -334,6 +337,8 @@ const cloudinaryId = path.basename(req.file.path);
       // JSON'u güncelle
       imageMap[seoName] = cloudinaryId;
       fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
+
+      console.log("✅ JSON dosyasına yazıldı!");
 
       // Veritabanı için resim yolunu hazırla
       resim = `/resimler/${seoName}`;
