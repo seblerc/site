@@ -314,7 +314,7 @@ exports.haberEkle = async (req, res) => {
       const seoMapPath = path.join(__dirname, '../seoImages.json');
 
       const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
-      const cloudinaryId = path.basename(req.file.path); // örn: viego-3-star.png
+const cloudinaryId = path.basename(req.file.path);
 
       // Logla ne yazıyoruz
       console.log("💾 SEO JSON yazılacak:", seoName, '→', cloudinaryId);

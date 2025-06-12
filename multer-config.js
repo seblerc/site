@@ -27,12 +27,18 @@ const fileFilter = (req, file, cb) => {
 const storage = new CloudinaryStorage({
   cloudinary: cloudinary,
   params: (req, file) => {
+    const parsedName = path.parse(file.originalname).name;
+    const ext = path.extname(file.originalname);
+    const safeName = parsedName.toLowerCase().replace(/\s+/g, '-').replace(/[^\w\-]/g, '');
+
     return {
       folder: 'haber_gorselleri',
-      allowed_formats: ['jpg', 'png', 'jpeg', 'webp'],
-      use_filename: true,           // ✅ Dosyanın adını kullan
-      unique_filename: false,       // ✅ Rastgele ek yapmasın
-      overwrite: false              // Aynı isim varsa yeni versiyon yaratmasın (opsiyonel)
+      public_id: safeName,         // 🔥 asıl mesele burada!
+      use_filename: true,
+      unique_filename: false,
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
+      overwrite: false,
+      resource_type: 'image'
     };
   }
 });
