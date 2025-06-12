@@ -310,8 +310,12 @@ exports.haberEkle = async (req, res) => {
 
   try {
     if (req.file && req.file.path.includes('cloudinary.com')) {
+      // SEO isimlendirme
       const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
-      const cloudinaryId = path.basename(req.file.path);
+
+      // ✅ Cloudinary'den tam yol
+      const cloudinaryPath = new URL(req.file.path).pathname; // /dawvc7cxy/image/upload/vXXXX/haber_gorselleri/abc.png
+      const cloudinaryId = cloudinaryPath.split('/upload/')[1]; // 🔥 vXXXX/haber_gorselleri/abc.png
 
       try {
         await db.query(
@@ -323,9 +327,11 @@ exports.haberEkle = async (req, res) => {
         console.error("❌ SEO görseli veritabanına yazılamadı:", err);
       }
 
+      // Veritabanına yazılacak proxy URL
       resim = `/resimler/${seoName}`;
     } else if (req.file) {
-      resim = req.file.path; // cloudinary değilse fallback
+      // Cloudinary kullanılmadıysa dosya yolu direkt verilsin (örn: lokal)
+      resim = req.file.path;
     }
 
     await db.query(`

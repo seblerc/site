@@ -33,7 +33,8 @@ const storage = new CloudinaryStorage({
 
     return {
       folder: 'haber_gorselleri',
-      public_id: safeName,         // 🔥 asıl mesele burada!
+      public_id: `haber_gorselleri/${safeName}`, // klasörü ID'ye ekle ki veritabanında tam yol tutulsun
+        // 🔥 asıl mesele burada!
       use_filename: true,
       unique_filename: false,
       allowed_formats: ['jpg', 'jpeg', 'png', 'webp'],
