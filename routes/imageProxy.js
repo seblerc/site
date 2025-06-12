@@ -5,7 +5,7 @@ const request = require('request');
 
 router.get('/:filename', async (req, res) => {
   const filename = req.params.filename;
-
+ console.log("📥 İstenen görsel:", filename);
   try {
     const [rows] = await db.query(
       'SELECT cloudinary_id FROM seo_images WHERE seo_name = ?',
@@ -18,7 +18,7 @@ router.get('/:filename', async (req, res) => {
 
     const cloudinaryFilename = rows[0].cloudinary_id;
 const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/haber_gorselleri/${cloudinaryFilename}`;
-
+  console.log("🧠 Cloudinary'den çağrılacak:", cloudinaryUrl);
     request.get(cloudinaryUrl)
       .on('response', (proxiedRes) => {
         res.setHeader('Content-Type', proxiedRes.headers['content-type']);
@@ -35,7 +35,6 @@ const cloudinaryUrl = `https://res.cloudinary.com/dawwc7cxy/image/upload/haber_g
   }
 });
 
-console.log("📥 İstenen görsel:", filename);
-console.log("🧠 Cloudinary'den çağrılacak:", cloudinaryUrl);
+
 
 module.exports = router;
