@@ -309,48 +309,25 @@ exports.haberEkle = async (req, res) => {
   let resim = null;
 
   try {
-    // Eğer görsel yüklendiyse ve cloudinary linki içeriyorsa
     if (req.file && req.file.path.includes('cloudinary.com')) {
-      const seoMapPath = path.join(process.cwd(), 'seoImages.json');
-
-      console.log("➡️ JSON dosya yolu:", seoMapPath);
-console.log("➡️ Dosya var mı?", fs.existsSync(seoMapPath));
-
       const seoName = slugify(path.parse(req.file.originalname).name) + path.extname(req.file.originalname);
-const cloudinaryId = path.basename(req.file.path);
+      const cloudinaryId = path.basename(req.file.path);
 
-      // Logla ne yazıyoruz
-      console.log("💾 SEO JSON yazılacak:", seoName, '→', cloudinaryId);
-
-      // Mevcut JSON'u oku
-      let imageMap = {};
-      if (fs.existsSync(seoMapPath)) {
-        try {
-          const raw = fs.readFileSync(seoMapPath, 'utf-8');
-          imageMap = JSON.parse(raw.trim() || '{}');
-        } catch (err) {
-          console.error('SEO JSON parse hatası:', err);
-          imageMap = {};
-        }
+      try {
+        await db.query(
+          'REPLACE INTO seo_images (seo_name, cloudinary_id) VALUES (?, ?)',
+          [seoName, cloudinaryId]
+        );
+        console.log("✅ Veritabanına SEO görsel eşleşmesi yazıldı:", seoName, cloudinaryId);
+      } catch (err) {
+        console.error("❌ SEO görseli veritabanına yazılamadı:", err);
       }
 
-      // JSON'u güncelle
-      imageMap[seoName] = cloudinaryId;
-      fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
-
-      console.log("✅ JSON dosyasına yazıldı!");
-
-      // Veritabanı için resim yolunu hazırla
       resim = `/resimler/${seoName}`;
-
-      // Ek log
-      console.log("resim kolonuna yazılacak:", resim);
     } else if (req.file) {
-      // Cloudinary değilse fallback
-      resim = req.file.path;
+      resim = req.file.path; // cloudinary değilse fallback
     }
 
-    // Veritabanına yaz
     await db.query(`
       INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -358,7 +335,7 @@ const cloudinaryId = path.basename(req.file.path);
 
     res.redirect('/');
   } catch (err) {
-    console.error("Haber eklenemedi:", err);
+    console.error("❌ Haber eklenemedi:", err);
     res.send("Haber eklenirken bir hata oluştu.");
   }
 };
