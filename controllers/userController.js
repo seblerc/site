@@ -1,6 +1,9 @@
 const db = require('../db');
 const bcrypt = require('bcryptjs');
 const slugify = require('../utils/slugify');
+const fs = require('fs');
+const path = require('path');
+
 
 exports.anasayfa = async (req, res) => {
   try {
@@ -303,8 +306,25 @@ exports.haberEkle = async (req, res) => {
   const tarih = new Date();
   const resim = req.file ? req.file.path : null;
   const yazar_id = req.session.kullanici.id;
-console.log("YÜKLENEN GÖRSEL:", req.file);
+
   try {
+    // 📦 SEO GÖRSEL MAP GÜNCELLE
+    if (req.file && req.file.path.includes('cloudinary.com')) {
+      const seoMapPath = path.join(__dirname, '../seoImages.json');
+      const seoName = slugify(baslik) + path.extname(req.file.originalname);
+      const cloudinaryId = req.file.filename || path.basename(req.file.path); // filename varsa onu kullan yoksa path'ten ayıkla
+
+      // JSON oku ve yaz
+      let imageMap = {};
+      if (fs.existsSync(seoMapPath)) {
+        const raw = fs.readFileSync(seoMapPath);
+        imageMap = JSON.parse(raw);
+      }
+      imageMap[seoName] = cloudinaryId;
+      fs.writeFileSync(seoMapPath, JSON.stringify(imageMap, null, 2));
+    }
+
+    // 📥 HABER VERİTABANI EKLE
     await db.query(`
       INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim)
       VALUES (?, ?, ?, ?, ?, ?, ?)
@@ -316,6 +336,15 @@ console.log("YÜKLENEN GÖRSEL:", req.file);
     res.send("Haber eklenirken bir hata oluştu.");
   }
 };
+
+function slugify(text) {
+  return text.toString().toLowerCase()
+    .replace(/\s+/g, '-')           
+    .replace(/[^\w\-]+/g, '')       
+    .replace(/\-\-+/g, '-')         
+    .replace(/^-+/, '')             
+    .replace(/-+$/, '');            
+}
 
 exports.haberDetay = async (req, res) => {
   const slug = req.params.slug;
