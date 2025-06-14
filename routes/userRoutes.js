@@ -48,7 +48,7 @@ router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruE
 // 📄 Haber İşlemleri
 router.get('/haber/:slug', csrfProtection, userController.haberDetay);
 router.get('/haber/duzenle/:id', adminOnly, csrfProtection,userController.haberDuzenleSayfasi);
-router.post('/haber/duzenle/:id', adminOnly, csrfProtection, upload.single('resim'), userController.haberDuzenleIslem);
+router.post('/haber/duzenle/:id',upload.single('resim'), adminOnly, csrfProtection, userController.haberDuzenleIslem);
 router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil);
 
 // 🖼️ Görsel Yükleme (CKEditor gibi)
