@@ -309,13 +309,17 @@
       <img src="<%= haber.resim %>" alt="<%= haber.baslik %>">
       <div class="icerik">
         <h3><%= haber.baslik %></h3>
-        <p><strong>Kategori:</strong> <%= haber.kategori_adi %></p>
-        <p><%- haber.icerik.replace(/<[^>]+>/g, '').substring(0, 200) %>...</p>
+        <p>
+          <%- (() => {
+            const metin = haber.icerik.replace(/<[^>]+>/g, '');
+            const ilkCumle = metin.split(/[.!?]/)[0];
+            return ilkCumle + (ilkCumle.length < metin.length ? '...' : '');
+          })() %>
+        </p>
       </div>
     </a>
   <% }) %>
 </div>
-
 
 
 
