@@ -1,4 +1,5 @@
 <style>
+  /* Üst bar */
   .ust-bar {
     max-width: 1000px;
     margin: 30px auto 10px;
@@ -6,30 +7,30 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    
   }
 
+  /* Bildirim sistemi */
   .bildirim-container {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-}
-
-.bildirim-badge {
-  position: absolute;
-  top: -3px;
-  right: -3px;
-  background-color: red;
-  border-radius: 50%;
-  width: 10px;
-  height: 10px;
-  display: none;
-}
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+  }
 
   .bildirim-icon {
     cursor: pointer;
     font-size: 22px;
+  }
+
+  .bildirim-badge {
+    position: absolute;
+    top: -3px;
+    right: -3px;
+    background-color: red;
+    border-radius: 50%;
+    width: 10px;
+    height: 10px;
+    display: none;
   }
 
   .bildirim-container.has-bildirim .bildirim-badge {
@@ -37,28 +38,29 @@
   }
 
   .bildirim-container.has-bildirim::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  right: -2px;
-  width: 10px;
-  height: 10px;
-  background: red;
-  border-radius: 50%;
-}
+    content: '';
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 10px;
+    height: 10px;
+    background: red;
+    border-radius: 50%;
+  }
+
   .bildirim-popup {
-  display: none;
-  position: absolute;
-  top: 30px;
-  right: 0;
-  background: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  width: 300px;
-  z-index: 100;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-  padding: 10px;
-}
+    display: none;
+    position: absolute;
+    top: 30px;
+    right: 0;
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    width: 300px;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    padding: 10px;
+  }
 
   .bildirim-popup h4 {
     margin-top: 0;
@@ -75,6 +77,7 @@
     border-bottom: 1px solid #eee;
   }
 
+  /* Duyuru kutusu */
   .duyuru-kutusu {
     max-width: 1000px;
     margin: 20px auto;
@@ -85,6 +88,7 @@
     font-family: Arial, sans-serif;
   }
 
+  /* Haber listesi */
   .haber-listesi {
     max-width: 1000px;
     margin: 0 auto 50px;
@@ -125,9 +129,8 @@
     text-decoration: underline;
     color: #333;
   }
-</style>
 
-<style>
+  /* Logo */
   .logo-container {
     position: absolute;
     top: 10px;
@@ -145,13 +148,8 @@
   .logo-container img:hover {
     transform: scale(1.05);
   }
-</style>
 
-<a href="/" class="logo-container">
-  <img src="/uploads/logo.png" alt="Site Logosu">
-</a>
-
-<style>
+  /* Üst bilgi barı */
   .bilgi-bar {
     background: #f0f0f0;
     font-family: Arial, sans-serif;
@@ -307,17 +305,14 @@
   <h2>🗞️ Latest News</h2>
 
   <% haberler.forEach(haber => { %>
-    <div class="haber">
-      <a href="/haber/<%= haber.slug %>">
-        <img src="<%= haber.resim %>" alt="<%= haber.baslik %>">
-      </a>
+    <a href="/haber/<%= haber.slug %>" class="haber">
+      <img src="<%= haber.resim %>" alt="<%= haber.baslik %>">
       <div class="icerik">
         <h3><%= haber.baslik %></h3>
         <p><strong>Kategori:</strong> <%= haber.kategori_adi %></p>
         <p><%- haber.icerik.replace(/<[^>]+>/g, '').substring(0, 200) %>...</p>
-        <a href="/haber/<%= haber.slug %>">	Read more →</a>
       </div>
-    </div>
+    </a>
   <% }) %>
 </div>
 
