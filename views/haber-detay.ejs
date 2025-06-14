@@ -131,7 +131,7 @@
 </style>
 
 <div class="haber-detay">
-  <a href="/" class="anasayfa-link">← Anasayfa</a>
+  <a href="/" class="anasayfa-link">← Back to Home</a>
 
   <h1><%= haber.baslik %></h1>
 
@@ -146,19 +146,19 @@
   </div>
 
   <div class="meta">
-    Kategori: <%= haber.kategori_adi %> |
-    Yazar: <%= haber.yazar_adi %> |
-    Tarih: <%= new Date(haber.tarih).toLocaleString('tr-TR') %>
+    Category: <%= haber.kategori_adi %> |
+  Author: <%= haber.yazar_adi %> |
+  Date: <%= new Date(haber.tarih).toLocaleString('en-GB') %>
   </div>
 
   <% if (kullanici && (kullanici.rol === 'admin' || kullanici.id === haber.kullanici_id)) { %>
-    <a href="/haber/duzenle/<%= haber.id %>" style="display:inline-block; margin-top: 20px;">✏️ Haberi Düzenle</a>
+    <a href="/haber/duzenle/<%= haber.id %>" style="display:inline-block; margin-top: 20px;">✏️ Edit</a>
   <% } %>
 
   <% if (kullanici && kullanici.rol === 'admin') { %>
     <form action="/haber/sil/<%= haber.id %>" method="POST" onsubmit="return confirm('Haberi silmek istediğinizden emin misiniz?');" style="margin-top: 10px;">
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-      <button type="submit" class="sil-btn">🗑 Haberi Sil</button>
+      <button type="submit" class="sil-btn">🗑 Delete</button>
     </form>
   <% } %>
 </div>
@@ -178,7 +178,7 @@
     font-size: 15px;
     cursor: pointer;
     transition: background 0.3s ease;
-  ">❌ Favoriden Kaldır</button>
+  ">❌ Remove</button>
 </form>
     <% } else { %>
       <form action="/favori/ekle/<%= haber.id %>" method="POST">
@@ -193,7 +193,7 @@
           font-size: 15px;
           cursor: pointer;
           transition: background 0.3s ease;
-        ">💖 Favoriye Ekle</button>
+        ">💖 Add to Favorites</button>
       </form>
     <% } %>
   </div>
@@ -229,7 +229,7 @@
       <% if (kullanici && (kullanici.rol === 'admin' || kullanici.id === y.kullanici_id)) { %>
         <form action="/yorum-sil/<%= y.id %>" method="POST" onsubmit="return confirm('Yorumu silmek istediğinize emin misiniz?');">
           <input type="hidden" name="_csrf" value="<%= csrfToken %>">
-          <button type="submit" class="sil-btn">🗑 Sil</button>
+          <button type="submit" class="sil-btn">🗑 delete</button>
         </form>
       <% } %>
     </div>
@@ -239,7 +239,7 @@
       <input type="hidden" name="haber_id" value="<%= haber.id %>">
       <input type="hidden" name="parent_id" value="<%= y.id %>">
       <textarea name="yorum" rows="2" required></textarea><br>
-      <button type="submit">Yanıtı Gönder</button>
+      <button type="submit">Send Reply</button>
     </form>
 
     <% yorumlariGoster(yorumlar, y.id, girinti + 1); %>
@@ -249,7 +249,7 @@
 
 <div style="max-width:700px; margin:auto;">
   <% if (yorumlar.length === 0) { %>
-    <p style="text-align:center;">Henüz yorum yok.</p>
+    <p style="text-align:center;">No comments yet.</p>
   <% } else { yorumlariGoster(yorumlar); } %>
 
   <% if (kullanici) { %>
@@ -257,10 +257,10 @@
       <input type="hidden" name="_csrf" value="<%= csrfToken %>">
       <input type="hidden" name="haber_id" value="<%= haber.id %>">
       <textarea name="yorum" rows="3" required></textarea><br>
-      <button type="submit">💬 Yorum Yap</button>
+      <button type="submit">💬 Post Comment</button>
     </form>
   <% } else { %>
-    <p style="text-align:center;">Yorum yapmak için <a href="/login">giriş yapın</a>.</p>
+    <p style="text-align:center;">To comment, please <a href="/login">log in</a>.</p>
   <% } %>
 </div>
 
