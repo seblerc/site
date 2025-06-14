@@ -56,7 +56,8 @@ app.use(session({
   cookie: {
     httpOnly: true,
     secure: isProd,
-    sameSite: isProd ? 'none' : 'lax'
+    sameSite: isProd ? 'none' : 'lax',
+    maxAge: 30 * 60 * 1000 // 💣 30 dakika boyunca afk atmaz
   }
 }));
 app.use((req, res, next) => {
@@ -64,6 +65,10 @@ app.use((req, res, next) => {
   "default-src 'self'; img-src 'self' https://res.cloudinary.com data:; script-src 'self' 'unsafe-inline' https://cdn.ckeditor.com; style-src 'self' 'unsafe-inline';"
 );
   next();
+});
+
+app.get('/ping', (req, res) => {
+  res.sendStatus(200);
 });
 
 
