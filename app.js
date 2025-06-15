@@ -8,6 +8,7 @@ const helmet = require('helmet');
 const expressLayouts = require('express-ejs-layouts');
 const { v4: uuidv4 } = require('uuid');
 const db = require('./db');
+const ipBilgi = require('./utils/ipBilgi');
 
 const sitemapRoutes = require('./routes/sitemapRoutes');
 const userRoutes = require('./routes/userRoutes');
@@ -105,6 +106,36 @@ app.use(async (req, res, next) => {
 // 💉 CSRF KORUMA BURAYA
 //const csrfProtection = csrf({ cookie: true });
 //app.use(csrfProtection);
+
+app.use(async (req, res, next) => {
+  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+  const cookieId = req.cookies.visitorId || uuidv4();
+  const userAgent = req.headers['user-agent'] || 'bilinmiyor';
+  const sayfa = req.originalUrl;
+  const kullanici = req.session?.kullanici?.email || null;
+
+  // Cookie oluşturulmamışsa kaydet
+  if (!req.cookies.visitorId) {
+    res.cookie('visitorId', cookieId, {
+      maxAge: 1000 * 60 * 60 * 24 * 7,
+      secure: isProd,
+      sameSite: isProd ? 'none' : 'lax'
+    });
+  }
+
+  const { sehir, ulke } = await ipBilgi(ip);
+
+  try {
+    await db.query(`
+      INSERT INTO ziyaret_log (ip, cookie_id, kullanici_email, user_agent, sayfa, sehir, ulke)
+      VALUES (?, ?, ?, ?, ?, ?, ?)
+    `, [ip, cookieId, kullanici, userAgent, sayfa, sehir, ulke]);
+  } catch (err) {
+    console.error("Ziyaret log hatası:", err.message);
+  }
+
+  next();
+});
 
 const imageProxyRoutes = require('./routes/imageProxy');
 app.use('/resimler', imageProxyRoutes);
