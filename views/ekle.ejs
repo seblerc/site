@@ -24,6 +24,9 @@
   <!-- CKEditor içeriği buraya aktarılacak -->
   <textarea id="editor" name="icerik" style="display: none;"></textarea>
 
+  <label>Etiketler (virgülle ayır):</label><br>
+<input type="text" name="etiketler" placeholder="örnek: palia, update, içerik"><br><br>
+
   <label>Kategori:</label><br>
   <select name="kategori_id" required>
     <% kategoriler.forEach(k => { %>

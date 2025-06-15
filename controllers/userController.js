@@ -301,7 +301,7 @@ exports.haberEkle = async (req, res) => {
     return res.status(403).send("Yetkisiz");
   }
 
-  const { baslik, icerik, kategori_id } = req.body;
+  const { baslik, icerik, kategori_id,etiketler } = req.body;
   const slug = slugify(baslik);
   const tarih = new Date();
   const yazar_id = req.session.kullanici.id;
@@ -335,9 +335,9 @@ exports.haberEkle = async (req, res) => {
     }
 
     await db.query(`
-      INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim)
+      INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim,etiketler)
       VALUES (?, ?, ?, ?, ?, ?, ?)
-    `, [baslik, icerik, slug, tarih, yazar_id, kategori_id, resim]);
+    `, [baslik, icerik, slug, tarih, yazar_id, kategori_id, resim,etiketler]);
 
     res.redirect('/');
   } catch (err) {
