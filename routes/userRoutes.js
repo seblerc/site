@@ -92,7 +92,7 @@ router.post('/yorum-sil/:id', csrfProtection, userController.yorumSil);
 
 // 🧾 Kategoriler & Galeri & İstatistik
 router.get('/kategori/:id', userController.kategoriyeGoreListele);
-router.get('/galeri', userController.galeri);
+
 router.get('/istatistik', userController.istatistik);
 
 // ⭐ Favoriler

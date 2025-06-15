@@ -120,7 +120,7 @@
   <span>Bitcoin <span class="kirmizi">▼ $104.535</span></span>
 </div>
 <div class="profil-container">
-  <h2>Profil Bilgileri</h2>
+  <h2>Profil </h2>
 
   <form action="/profil" method="POST" enctype="multipart/form-data">
     <input type="hidden" name="_csrf" value="<%= csrfToken %>">
@@ -131,20 +131,20 @@
     <label>Yeni Şifre:</label>
     <input type="password" name="sifre" placeholder="Yeni şifre">
 
-    <label>Profil Fotoğrafı:</label><br>
+    <label>Profil Photo:</label><br>
     <% if (kullanici.profil_resim) { %>
   <img src="<%= kullanici.profil_resim %>" alt="Profil Fotoğrafı" width="100"><br>
 <% } %>
     <input type="file" name="profil_resim" accept="image/*">
 
-    <button type="submit">Güncelle</button>
+    <button type="submit">Update</button>
   </form>
 
   <% if (mesaj) { %>
     <p><%= mesaj %></p>
   <% } %>
 
-  <a href="/" class="geri-don-btn">🏠 Anasayfaya Dön</a>
+  <a href="/" class="geri-don-btn">🏠 Back to Homepage</a>
 </div>
 
 <script>
