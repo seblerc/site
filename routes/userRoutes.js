@@ -46,7 +46,7 @@ router.post('/admin/duyuru-ekle', csrfProtection, adminOnly, userController.duyu
 router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruEkleSayfasi);
 
 // 📄 Haber İşlemleri
-router.get('/haber/:slug', csrfProtection, userController.haberDetay);
+router.get('/news/:slug', csrfProtection, userController.haberDetay);
 router.get('/haber/duzenle/:id', adminOnly, csrfProtection,userController.haberDuzenleSayfasi);
 router.post('/haber/duzenle/:id',upload.single('resim'), adminOnly, csrfProtection, userController.haberDuzenleIslem);
 router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil);
