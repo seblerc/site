@@ -336,7 +336,7 @@ exports.haberEkle = async (req, res) => {
 
     await db.query(`
       INSERT INTO haberler (baslik, icerik, slug, tarih, yazar_id, kategori_id, resim,etiketler)
-      VALUES (?, ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?,?)
     `, [baslik, icerik, slug, tarih, yazar_id, kategori_id, resim,etiketler]);
 
     res.redirect('/');
