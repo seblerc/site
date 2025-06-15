@@ -19,17 +19,7 @@ app.use((req, res, next) => {
   const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
    //Sadece senin IP adresine izin ver
-  const benimIP = "88.240.27.109"; // kendi IP adresini yaz buraya
-
-  if (ip.includes(benimIP)) {
-    return next(); // sen geç, diğerleri giremez
-  }
-
-  res.send(`
-    <h1>🛠 Site şu anda bakımda</h1>
-    <p>Lütfen daha sonra tekrar deneyiniz.</p>
-  `);
- });
+  //const benimIP = "88.240.27.109"; if (ip.includes(benimIP)) { return next(); } res.send(` <h1>🛠 Site şu anda bakımda</h1> <p>Lütfen daha sonra tekrar deneyiniz.</p> `); });
 // 🛡️ Güvenlik
 app.use(helmet());
 
