@@ -307,7 +307,6 @@
 
 <div class="haber-listesi">
   <h2>🗞️ Latest News</h2>
-
   <% haberler.forEach(haber => { %>
     <a href="/haber/<%= haber.slug %>" class="haber">
       <img src="<%= haber.resim %>" alt="<%= haber.baslik %>">
@@ -320,11 +319,17 @@
             return ilkCumle + (ilkCumle.length < metin.length ? '...' : '');
           })() %>
         </p>
+        <% if (haber.etiketler) { %>
+          <div style="margin-top: 5px;">
+            <% haber.etiketler.split(',').forEach(et => { %>
+              <span style="background: #e7f0ff; padding: 4px 10px; margin-right: 5px; border-radius: 15px; font-size: 12px; color: #333;">#<%= et.trim() %></span>
+            <% }) %>
+          </div>
+        <% } %>
       </div>
     </a>
   <% }) %>
 </div>
-
 
 
 
