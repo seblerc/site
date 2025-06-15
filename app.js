@@ -15,8 +15,8 @@ const userRoutes = require('./routes/userRoutes');
 const app = express();
 const isProd = process.env.NODE_ENV === 'production';
 // 💣 Herkese bakım sayfası göster, sadece sen hariç
-app.use((req, res, next) => {
-  const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
+//app.use((req, res, next) => {
+  //const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress;
 
    //Sadece senin IP adresine izin ver
   //const benimIP = "88.240.27.109"; // kendi IP adresini yaz buraya
@@ -29,7 +29,7 @@ app.use((req, res, next) => {
     //<h1>🛠 Site şu anda bakımda</h1>
     //<p>Lütfen daha sonra tekrar deneyiniz.</p>
   //`);
- });
+ //});
 // 🛡️ Güvenlik
 app.use(helmet());
 
@@ -114,6 +114,6 @@ app.use('/', userRoutes);
 
 // 🚀 Sunucuyu başlat
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`🟢 Sunucu çalışıyor: http://0.0.0.0:${PORT}`);
+app.listen(PORT, () => {
+  console.log(`🟢 Sunucu çalışıyor: http://localhost:${PORT}`);
 });
