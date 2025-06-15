@@ -47,6 +47,11 @@ router.get('/admin/ekle', csrfProtection, adminOnly, userController.haberDuyuruE
 
 // 📄 Haber İşlemleri
 router.get('/news/:slug', csrfProtection, userController.haberDetay);
+
+router.get('/haber/:slug', (req, res) => {
+  res.redirect(301, `/news/${req.params.slug}`);
+});
+
 router.get('/haber/duzenle/:id', adminOnly, csrfProtection,userController.haberDuzenleSayfasi);
 router.post('/haber/duzenle/:id',upload.single('resim'), adminOnly, csrfProtection, userController.haberDuzenleIslem);
 router.post('/haber/sil/:id', adminOnly, csrfProtection, userController.haberSil);
