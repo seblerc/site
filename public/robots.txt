@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /wp-includes/
+Disallow: /wlwmanifest.xml
+Disallow: /xmlrpc.php
+Disallow: /cms/
+Disallow: /wp2/

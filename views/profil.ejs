@@ -1,0 +1,135 @@
+
+
+
+<style>
+  .logo-container {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 200;
+  }
+
+  .logo-container img {
+    height: 38px;
+    width: auto;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.05);
+  }
+</style>
+<style>
+  .profil-container {
+    max-width: 500px;
+    margin: 40px auto;
+    padding: 30px;
+    border: 1px solid #ccc;
+    border-radius: 12px;
+    background-color: #f9f9f9;
+    font-size: 18px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.05);
+  }
+
+  .profil-container input[type="text"],
+  .profil-container input[type="password"],
+  .profil-container input[type="file"] {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    margin-top: 5px;
+    margin-bottom: 15px;
+  }
+
+  .profil-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+  }
+
+  .profil-container button:hover {
+    background-color: #2980b9;
+  }
+
+  .geri-don-btn {
+    display: inline-block;
+    margin-top: 20px;
+    padding: 10px 16px;
+    background-color: #d4f4d4;
+    color: #000;
+    border: 1px solid #9be29b;
+    border-radius: 8px;
+    font-weight: bold;
+    text-decoration: none;
+  }
+
+  .geri-don-btn:hover {
+    background-color: #bdecbc;
+  }
+</style>
+<style>
+  .bilgi-bar {
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 15px;
+    gap: 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .bilgi-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .saat-kutu {
+    background-color: #1d4f91;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .yesil { color: green; }
+  .kirmizi { color: red; }
+</style>
+
+
+<div class="profil-container">
+  <h2>Profil </h2>
+
+  <form action="/profil" method="POST" enctype="multipart/form-data">
+    <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+    <label>İsim:</label>
+    <input type="text" name="isim" value="<%= kullanici.isim %>" required>
+
+    <label>Yeni Şifre:</label>
+    <input type="password" name="sifre" placeholder="Yeni şifre">
+
+    <label>Profil Photo:</label><br>
+    <% if (kullanici.profil_resim) { %>
+  <img src="<%= kullanici.profil_resim %>" alt="Profil Fotoğrafı" width="100"><br>
+<% } %>
+    <input type="file" name="profil_resim" accept="image/*">
+
+    <button type="submit">Update</button>
+  </form>
+
+  <% if (mesaj) { %>
+    <p><%= mesaj %></p>
+  <% } %>
+
+  <a href="/" class="geri-don-btn">🏠 Back to Homepage</a>
+</div>
+

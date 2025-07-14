@@ -1,0 +1,72 @@
+
+
+<h2>👑 Admin Panel</h2>
+<p>Hoş geldiniz <strong><%= kullanici.isim %></strong>, burası adminlere özel bir bölümdür.</p>
+
+<table style="border-collapse: collapse; width: 100%;">
+  <thead>
+    <tr style="background-color: #f2f2f2;">
+      <th>ID</th>
+      <th>İsim</th>
+      <th>Email</th>
+      <th>Rol</th>
+      <th>Ban Durumu</th>
+      <th>Rolü Değiştir</th>
+      <th>İşlemler</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% kullanicilar.forEach(k => { %>
+      <tr style="text-align: center; border-bottom: 1px solid #ddd;">
+        <td><%= k.id %></td>
+        <td><%= k.isim %></td>
+        <td><%= k.email %></td>
+        <td>
+          <span style="padding: 4px 8px; border-radius: 5px; background-color: <%= k.rol === 'admin' ? '#007BFF' : '#6c757d' %>; color: white;">
+            <%= k.rol %>
+          </span>
+        </td>
+        <td>
+          <span style="padding: 4px 8px; border-radius: 5px; background-color: <%= k.banli ? '#dc3545' : '#28a745' %>; color: white;">
+            <%= k.banli ? '⛔ Banlı' : '✅ Aktif' %>
+          </span>
+        </td>
+        <td>
+          <% if (k.id !== kullanici.id) { %>
+          <form action="/admin/rol-guncelle" method="POST" style="display: inline;">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <input type="hidden" name="kullanici_id" value="<%= k.id %>">
+            <select name="yeni_rol">
+              <option value="user" <%= k.rol === 'user' ? 'selected' : '' %>>user</option>
+              <option value="admin" <%= k.rol === 'admin' ? 'selected' : '' %>>admin</option>
+            </select>
+            <button type="submit">Güncelle</button>
+          </form>
+          <% } else { %>
+            <em>—</em>
+          <% } %>
+        </td>
+        <td>
+          <% if (k.id !== kullanici.id) { %>
+          <!-- Banla -->
+          <form action="/admin/banla/<%= k.id %>" method="POST" style="display:inline;">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit"><%= k.banli ? "Banı Kaldır" : "Banla" %></button>
+          </form>
+
+          <!-- Sil -->
+          <form action="/admin/sil/<%= k.id %>" method="POST" style="display:inline;" onsubmit="return confirm('Silmek istediğinize emin misiniz?')">
+            <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+            <button type="submit">Sil</button>
+          </form>
+          <% } else { %>
+            <em>—</em>
+          <% } %>
+        </td>
+      </tr>
+    <% }) %>
+  </tbody>
+</table>
+
+<br>
+<a href="/" style="text-decoration: none;">← Anasayfaya Dön</a>

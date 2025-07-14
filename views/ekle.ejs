@@ -1,0 +1,82 @@
+<h2>📢 Duyuru Ekle</h2>
+<form action="/admin/duyuru-ekle" method="POST">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <label>Duyuru Başlığı:</label><br>
+  <input type="text" name="baslik" required><br><br>
+
+  <label>Duyuru İçeriği:</label><br>
+  <textarea name="icerik" rows="4" required></textarea><br><br>
+
+  <button type="submit">Duyuruyu Yayınla</button>
+</form>
+
+<hr>
+
+<h2>🛠 Haber Ekle</h2>
+<form action="/admin/haber-ekle" method="POST" enctype="multipart/form-data">
+  <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+
+  <label>Başlık:</label><br>
+  <input type="text" name="baslik" required><br><br>
+
+  <label>İçerik:</label><br>
+  <!-- CKEditor içeriği buraya aktarılacak -->
+  <textarea id="editor" name="icerik" style="display: none;"></textarea>
+
+  <label>Etiketler (virgülle ayır):</label><br>
+<input type="text" name="etiketler" placeholder="örnek: palia, update, içerik"><br><br>
+
+  <label>Kategori:</label><br>
+  <select name="kategori_id" required>
+    <% kategoriler.forEach(k => { %>
+      <option value="<%= k.id %>"><%= k.isim %></option>
+    <% }) %>
+  </select><br><br>
+
+  <label>Görsel Yükle (Kapak):</label><br>
+  <input type="file" name="resim" accept="image/*" required><br><br>
+
+  <button type="submit">Haberi Ekle</button>
+</form>
+
+<!-- CKEditor -->
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
+<script>
+  let editorInstance;
+
+  window.addEventListener("load", () => {
+    ClassicEditor
+      .create(document.querySelector('#editor'), {
+        ckfinder: {
+          uploadUrl: '/upload-image?_csrf=<%= csrfToken %>'
+        }
+      })
+      .then(editor => {
+        editorInstance = editor;
+
+        document.querySelector('form[action="/admin/haber-ekle"]').addEventListener('submit', function (e) {
+          const icerik = editor.getData().trim();
+
+          if (!icerik) {
+            alert("İçerik boş olamaz.");
+            e.preventDefault();
+            return;
+          }
+
+          document.querySelector('#editor').value = icerik;
+        });
+      })
+      .catch(error => {
+        console.error("CKEditor hatası:", error);
+      });
+  });
+</script>
+
+<script>
+  setInterval(() => {
+    fetch('/ping'); // 🫡 Oturumu diri tut
+  }, 5 * 60 * 1000); // Her 5 dakikada bir
+</script>
+
+<a href="/">← Anasayfaya Dön</a>

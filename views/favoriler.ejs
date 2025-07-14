@@ -1,0 +1,176 @@
+
+<style>
+  .logo-container {
+    position: absolute;
+    top: 10px;
+    left: 15px;
+    z-index: 200;
+  }
+
+  .logo-container img {
+    height: 38px;
+    width: auto;
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+
+  .logo-container img:hover {
+    transform: scale(1.05);
+  }
+</style>
+
+<a href="/" class="logo-container">
+  <img src="/uploads/logo.png" alt="Site Logosu">
+</a>
+
+<style>
+  .bilgi-bar {
+    background: #f0f0f0;
+    font-family: Arial, sans-serif;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 6px 15px;
+    gap: 15px;
+    font-size: 14px;
+    border-bottom: 1px solid #ccc;
+  }
+
+  .link-bar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold;
+    position: relative;
+    transition: color 0.3s ease;
+  }
+
+  .link-bar a::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -2px;
+    width: 0;
+    height: 2px;
+    background-color: #6c63ff;
+    transition: width 0.3s ease;
+  }
+
+  .link-bar a:hover {
+    color: #6c63ff;
+  }
+
+  .link-bar a:hover::after {
+    width: 100%;
+  }
+
+  .bilgi-bar span {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .saat-kutu {
+    background-color: #1d4f91;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-weight: bold;
+  }
+
+  .yesil { color: green; }
+  .kirmizi { color: red; }
+</style>
+<div class="bilgi-bar">
+  <span>🌤️ <span id="havaDurumu">Yükleniyor...</span></span>
+  <span class="vakit-kapsayici">🕌 Sabah: <span class="saat-kutu" data-saat="04:12">04:12</span></span>
+<span class="vakit-kapsayici">🕌 Öğle: <span class="saat-kutu" data-saat="12:47">12:47</span></span>
+<span class="vakit-kapsayici">🕌 İkindi: <span class="saat-kutu" data-saat="16:28">16:28</span></span>
+<span class="vakit-kapsayici">🕌 Akşam: <span class="saat-kutu" data-saat="20:15">20:15</span></span>
+<span class="vakit-kapsayici">🕌 Yatsı: <span class="saat-kutu" data-saat="21:42">21:42</span></span>
+  <span>Bist <span class="yesil">▲ 9.668,36</span></span>
+  <span>Dolar <span class="kirmizi">▼ 38,8447</span></span>
+  <span>Euro <span class="yesil">▲ 43,7475</span></span>
+  <span>Altın <span class="yesil">▲ 4.041,848</span></span>
+  <span>Bitcoin <span class="kirmizi">▼ $104.535</span></span>
+</div>
+<div style="max-width:800px; margin:40px auto;">
+  <h2>⭐ Favori Haberlerim</h2>
+  <% if (favoriler.length === 0) { %>
+    <p>Henüz favoriye eklenmiş haberin yok.</p>
+  <% } else { %>
+    <% favoriler.forEach(h => { %>
+      <div style="border:1px solid #ccc; padding:15px; margin-bottom:15px; border-radius:8px;">
+        <h3><a href="/haber/<%= h.slug %>"><%= h.baslik %></a></h3>
+        <form action="/favori/kaldir/<%= h.id %>" method="POST">
+          <input type="hidden" name="nereden" value="favorilerim">
+          <button type="submit">❌ Favoriden Kaldır</button>
+        </form>
+      </div>
+    <% }) %>
+  <% } %>
+</div>
+
+<div style="max-width:800px; margin:20px auto; text-align:right;">
+  <a href="/" style="
+    background: #d4f4d4;
+    padding: 8px 14px;
+    border: 1px solid #9be29b;
+    border-radius: 6px;
+    color: #000;
+    text-decoration: none;
+    font-weight: bold;
+  ">🏠 Anasayfa’ya Dön</a>
+</div>
+
+<script>
+  // SAMSUN hava durumu (open-meteo ücretsiz ve key istemez)
+  fetch("https://api.open-meteo.com/v1/forecast?latitude=41.2867&longitude=36.33&current_weather=true")
+    .then(res => res.json())
+    .then(data => {
+      const temp = data.current_weather.temperature;
+      const icon = "🌡️";
+      document.getElementById("havaDurumu").innerText = `${icon} ${temp}°C`;
+    })
+    .catch(() => {
+      document.getElementById("havaDurumu").innerText = "☁️ Hava bilgisi yok";
+    });
+</script>
+
+<script>
+  function parseSaat(saatStr) {
+    const [saat, dakika] = saatStr.split(":").map(Number);
+    const hedef = new Date();
+    hedef.setHours(saat, dakika, 0, 0);
+    return hedef;
+  }
+
+  function guncelVakitSec() {
+    const simdi = new Date();
+    const vakitler = document.querySelectorAll(".saat-kutu");
+    let sonraki = null;
+
+    vakitler.forEach(kutu => {
+      const hedefZaman = parseSaat(kutu.dataset.saat);
+      if (!sonraki && hedefZaman > simdi) {
+        sonraki = kutu;
+      }
+    });
+
+    if (!sonraki) {
+      // Hepsi geçtiyse sabahı göster
+      sonraki = vakitler[0];
+    }
+
+    // Tüm kapsayıcıları gizle, sadece seçileni göster
+    document.querySelectorAll(".vakit-kapsayici").forEach(span => {
+      span.style.display = "none";
+    });
+
+    sonraki.parentElement.style.display = "flex";
+    sonraki.style.backgroundColor = '#ff9900';
+    sonraki.style.color = 'white';
+  }
+
+  guncelVakitSec();
+</script>

@@ -1,0 +1,273 @@
+
+
+<style>
+  .haber-detay {
+    max-width: 850px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .haber-detay h1 {
+    text-align: center;
+    font-size: 32px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+
+  .haber-detay img {
+    width: 100%;
+    border-radius: 8px;
+    margin: 20px 0;
+  }
+
+  .yazar {
+    text-align: center;
+    color: #999;
+    font-style: italic;
+    margin-bottom: 10px;
+  }
+
+  .icerik {
+    font-size: 18px;
+    color: #444;
+    line-height: 1.7;
+    text-align: justify;
+    margin-bottom: 30px;
+  }
+
+  .meta {
+    text-align: center;
+    font-size: 14px;
+    color: #aaa;
+    margin-top: 30px;
+  }
+
+  .anasayfa-link {
+    display: inline-block;
+    margin-bottom: 15px;
+    color: #555;
+    text-decoration: none;
+    font-weight: bold;
+    transition: color 0.3s;
+  }
+
+  .anasayfa-link:hover {
+    color: #6c63ff;
+  }
+
+  .yorum-kutu {
+    margin-bottom: 20px;
+    border: 1px solid #eee;
+    border-left: 5px solid #6c63ff;
+    padding: 15px;
+    border-radius: 8px;
+    background: #fafafa;
+  }
+
+  .yorum-kutu img {
+    border-radius: 50%;
+    margin-right: 10px;
+  }
+
+  .yorum-baslik {
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px;
+    font-weight: bold;
+  }
+
+  .yorum-icerik {
+    margin-left: 50px;
+    color: #333;
+  }
+
+  .yorum-buttons {
+    display: flex;
+    gap: 12px;
+    margin-left: 50px;
+    margin-top: 10px;
+  }
+
+  .yorum-buttons button,
+  .haber-detay button {
+    padding: 6px 12px;
+    border: none;
+    background: #6c63ff;
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s ease;
+  }
+
+  .yorum-buttons button:hover,
+  .haber-detay button:hover {
+    background: #554ae0;
+  }
+
+  .yorum-buttons .sil-btn {
+    background: #e63946;
+  }
+
+  .yorum-buttons .sil-btn:hover {
+    background: #c21f2c;
+  }
+
+  .yanit-form textarea,
+  .yorum-gonder textarea {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    padding: 8px;
+    margin-top: 10px;
+  }
+
+  .yorum-gonder button {
+    margin-top: 10px;
+  }
+</style>
+
+<div class="haber-detay">
+  <a href="/" class="anasayfa-link">← Back to Home</a>
+
+  <h1><%= haber.baslik %></h1>
+
+  <% if (haber.resim) { %>
+    <img src="<%= haber.resim %>" alt="Haber Görseli">
+  <% } %>
+
+  <p class="yazar">(<%= haber.yazar_adi %>)</p>
+
+  <div class="icerik">
+    <%- haber.icerik %>
+  </div>
+
+  <div class="meta">
+    Category: <%= haber.kategori_adi %> |
+  Author: <%= haber.yazar_adi %> |
+  Date: <%= new Date(haber.tarih).toLocaleString('en-GB') %>
+  </div>
+
+  <% if (kullanici && (kullanici.rol === 'admin' || kullanici.id === haber.kullanici_id)) { %>
+    <a href="/haber/duzenle/<%= haber.id %>" style="display:inline-block; margin-top: 20px;">✏️ Edit</a>
+  <% } %>
+
+  <% if (kullanici && kullanici.rol === 'admin') { %>
+    <form action="/haber/sil/<%= haber.id %>" method="POST" onsubmit="return confirm('Haberi silmek istediğinizden emin misiniz?');" style="margin-top: 10px;">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <button type="submit" class="sil-btn">🗑 Delete</button>
+    </form>
+  <% } %>
+</div>
+<% if (kullanici) { %>
+  <div style="text-align:center; margin-top: 20px;">
+    <% if (favorideMi) { %>
+      <form action="/favori/kaldir/<%= haber.id %>" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+  <input type="hidden" name="nereden" value="detay">
+  <button type="submit" style="
+    background: #e74c3c;
+    color: white;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 6px;
+    font-weight: bold;
+    font-size: 15px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+  ">❌ Remove</button>
+</form>
+    <% } else { %>
+      <form action="/favori/ekle/<%= haber.id %>" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit" style="
+          background: #e91e63;
+          color: white;
+          padding: 8px 20px;
+          border: none;
+          border-radius: 6px;
+          font-weight: bold;
+          font-size: 15px;
+          cursor: pointer;
+          transition: background 0.3s ease;
+        ">💖 Add to Favorites</button>
+      </form>
+    <% } %>
+  </div>
+<% } %>
+<hr>
+<h3 style="text-align:center; margin-top: 40px;">💬 Yorumlar</h3>
+
+<% function yorumlariGoster(yorumlar, parentId = null, girinti = 0) {
+  yorumlar
+    .filter(y => y.parent_id === parentId)
+    .forEach(y => { %>
+
+  <div class="yorum-kutu" style="margin-left:<%= girinti * 40 %>px;">
+    <div class="yorum-baslik">
+      <% if (y.profil_resim) { %>
+        <img src="<%= y.profil_resim %>" width="40" height="40">
+      <% } else { %>
+        <div style="width:40px; height:40px; background:#ccc; border-radius:50%; margin-right:10px;"></div>
+      <% } %>
+      <div><%= y.isim %> (<%= y.rol %>) • <small><%= new Date(y.tarih).toLocaleString('tr-TR') %></small></div>
+    </div>
+
+    <div class="yorum-icerik">
+      <p><%= y.yorum %></p>
+    </div>
+
+    <div class="yorum-buttons">
+      <form action="/yorum-begen/<%= y.id %>" method="POST">
+        <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+        <button type="submit">👍 <%= y.begeni %></button>
+      </form>
+      <button onclick="toggleReplyForm(<%= y.id %>)">➡ Yanıtla</button>
+      <% if (kullanici && (kullanici.rol === 'admin' || kullanici.id === y.kullanici_id)) { %>
+        <form action="/yorum-sil/<%= y.id %>" method="POST" onsubmit="return confirm('Yorumu silmek istediğinize emin misiniz?');">
+          <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+          <button type="submit" class="sil-btn">🗑 delete</button>
+        </form>
+      <% } %>
+    </div>
+
+    <form class="yanit-form" action="/yorum-ekle" method="POST" id="yanitForm_<%= y.id %>" style="display:none;">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="haber_id" value="<%= haber.id %>">
+      <input type="hidden" name="parent_id" value="<%= y.id %>">
+      <textarea name="yorum" rows="2" required></textarea><br>
+      <button type="submit">Send Reply</button>
+    </form>
+
+    <% yorumlariGoster(yorumlar, y.id, girinti + 1); %>
+  </div>
+
+<% }); } %>
+
+<div style="max-width:700px; margin:auto;">
+  <% if (yorumlar.length === 0) { %>
+    <p style="text-align:center;">No comments yet.</p>
+  <% } else { yorumlariGoster(yorumlar); } %>
+
+  <% if (kullanici) { %>
+    <form class="yorum-gonder" action="/yorum-ekle" method="POST">
+      <input type="hidden" name="_csrf" value="<%= csrfToken %>">
+      <input type="hidden" name="haber_id" value="<%= haber.id %>">
+      <textarea name="yorum" rows="3" required></textarea><br>
+      <button type="submit">💬 Post Comment</button>
+    </form>
+  <% } else { %>
+    <p style="text-align:center;">To comment, please <a href="/login">log in</a>.</p>
+  <% } %>
+</div>
+
+<script>
+  function toggleReplyForm(id) {
+    const form = document.getElementById(`yanitForm_${id}`);
+    form.style.display = (form.style.display === 'none') ? 'block' : 'none';
+  }
+</script>
+
